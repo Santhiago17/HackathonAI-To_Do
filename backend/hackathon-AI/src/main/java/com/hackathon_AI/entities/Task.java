@@ -1,6 +1,6 @@
 package com.hackathon_AI.entities;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ public class Task {
     private String title;
     private String description;
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDate endDate;
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
