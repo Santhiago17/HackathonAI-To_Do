@@ -1,0 +1,264 @@
+# Relatório de Análise: Sistema TODO em COBOL
+
+## Visão Geral do Sistema
+
+O sistema TODO em COBOL é uma aplicação de gerenciamento de tarefas desenvolvida em linguagem COBOL, containerizada com Docker. A aplicação oferece funcionalidades completas para gerenciamento de usuários e tarefas através de um menu interativo em linha de comando.
+
+## Arquitetura e Estrutura
+
+### Arquivos do Projeto
+- **todoapp.cbl**: Código fonte principal em COBOL (398 linhas)
+- **Dockerfile**: Configuração de containerização
+- **README.md**: Documentação básica do projeto
+
+### Divisões COBOL
+1. **IDENTIFICATION DIVISION**: Define o programa como `todoapp`
+2. **DATA DIVISION**: Contém todas as estruturas de dados
+3. **PROCEDURE DIVISION**: Implementa a lógica de negócio
+
+## Estruturas de Dados
+
+### Entidade Usuário (User Entity)
+```cobol
+- USER-COUNT: Contador de usuários (PIC 9(4))
+- USER-ID: Identificador único (PIC 9(4))
+- USER-FIRST-NAME: Primeiro nome (PIC X(30))
+- USER-LAST-NAME: Sobrenome (PIC X(100))
+- USER-BIRTH-DATE: Data de nascimento (PIC 9(8))
+- USER-AGE: Idade calculada (PIC 99)
+- USERS-TABLE: Tabela com até 100 usuários
+```
+
+### Entidade Tarefa (Task Entity)
+```cobol
+- TASK-COUNT: Contador de tarefas (PIC 9(4))
+- TASK-ID: Identificador único (PIC 9(4))
+- TASK-TITLE: Título da tarefa (PIC X(100))
+- TASK-DESCRIPTION: Descrição detalhada (PIC X(1000))
+- TASK-END-DATE: Data de conclusão (PIC 9(8))
+- TASK-CREATOR-ID: ID do criador (PIC 9(4))
+- TASK-ASSIGNEE-ID: ID do responsável (PIC 9(4))
+- TASK-TAGS: Tags separadas por vírgula (PIC X(100))
+- TASK-PRIORITY: Prioridade 1-3 (PIC 9(1))
+- TASK-STATUS: Status atual (PIC X(10))
+- TASK-CREATION-DT: Data/hora de criação (PIC 9(14))
+- TASK-UPDATE-DT: Data/hora de atualização (PIC 9(14))
+- TASKS-TABLE: Tabela com até 500 tarefas
+```
+
+### Variáveis Auxiliares
+- Controle de menu e navegação
+- Utilitários para data/hora
+- Flags de controle (found, exit, etc.)
+- Índices para loops (IDX, JDX)
+
+## Funcionalidades Implementadas
+
+### 1. Gerenciamento de Usuários
+
+#### CREATE-USER
+- **Validações**:
+  - Nome máximo 30 caracteres
+  - Sobrenome máximo 100 caracteres
+  - Idade mínima 18 anos
+- **Processo**:
+  - Coleta dados do usuário
+  - Calcula idade automaticamente
+  - Gera ID sequencial
+  - Armazena na tabela de usuários
+
+#### LIST-USERS
+- Exibe todos os usuários cadastrados
+- Formato: ID, Nome completo, Data de nascimento
+- Trata caso de lista vazia
+
+### 2. Gerenciamento de Tarefas
+
+#### CREATE-TASK
+- **Validações**:
+  - Título máximo 100 caracteres
+  - Descrição máximo 1000 caracteres
+  - Data de fim não pode ser no passado
+  - Responsável obrigatório
+  - Tags máximo 100 caracteres
+  - Prioridade entre 1-3
+- **Processo**:
+  - Coleta todos os dados da tarefa
+  - Define timestamps de criação/atualização
+  - Gera ID sequencial
+  - Armazena na tabela de tarefas
+
+#### EDIT-TASK
+- Permite edição de campos específicos
+- Campos editáveis:
+  - Título
+  - Descrição
+  - Data de conclusão
+  - Tags
+  - Prioridade
+- Atualiza timestamp de modificação
+- Preserva campos não alterados
+
+#### LIST-TASKS
+- Exibe todas as tarefas cadastradas
+- Formato: ID, Título, Responsável, Data fim, Tags, Prioridade, Status
+- Trata caso de lista vazia
+
+#### LIST-TASKS-BY-USER
+- Filtra tarefas por usuário responsável
+- Exibe: ID, Título, Status
+- Busca por ID do usuário
+
+#### SEARCH-TASKS-BY-TAG
+- Busca tarefas por tag específica
+- Comparação exata de string
+- Exibe: ID, Título, Tags
+
+#### REMOVE-TASK
+- Remove tarefa por ID
+- Reorganiza array (compacta)
+- Confirma remoção
+
+#### UPDATE-TASK-STATUS
+- Atualiza apenas o status da tarefa
+- Exibe status atual
+- Permite novos valores: TODO/DOING/DONE
+- Atualiza timestamp de modificação
+
+### 3. Utilitários
+
+#### Cálculo de Idade
+- **CALCULATE-AGE**: Calcula idade baseada na data atual
+- **CALCULATE-AGE-FROM-BIRTHDATE**: Lógica de cálculo considerando mês/dia
+
+#### Validação de Datas
+- **VALIDATE-TASK-END-DATE**: Verifica se data não é passada
+- **SET-TASK-DATES**: Define timestamps de criação/atualização
+
+#### Funções de Data/Hora
+- **GET-CURRENT-DATE**: Obtém data atual (AAAAMMDD)
+- **GET-CURRENT-DATETIME**: Obtém data/hora atual (AAAAMMDDHHMMSS)
+
+## Regras de Negócio
+
+### Usuários
+1. Idade mínima de 18 anos
+2. Nome limitado a 30 caracteres
+3. Sobrenome limitado a 100 caracteres
+4. ID gerado automaticamente e sequencial
+5. Máximo 100 usuários no sistema
+
+### Tarefas
+1. Título obrigatório (máximo 100 caracteres)
+2. Descrição opcional (máximo 1000 caracteres)
+3. Data de conclusão não pode ser no passado
+4. Responsável obrigatório
+5. Prioridade entre 1 (baixa) e 3 (alta)
+6. Status textual livre (sugestão: TODO/DOING/DONE)
+7. Tags separadas por vírgula (máximo 100 caracteres)
+8. Máximo 500 tarefas no sistema
+9. Timestamps automáticos de criação e atualização
+
+## Interface do Usuário
+
+### Menu Principal
+```
+TODO Application Menu
+1. Create user
+2. List users
+3. Create task
+4. Edit task
+5. List all tasks
+6. List tasks assigned to a user
+7. Search tasks by tag
+8. Remove task
+9. Update task status
+0. Exit
+```
+
+### Características da Interface
+- Menu numérico simples
+- Prompts em inglês
+- Entrada via ACCEPT
+- Saída via DISPLAY
+- Validação de entrada com mensagens de erro
+- Loop principal até opção de saída
+
+## Limitações Técnicas
+
+### Armazenamento
+- Dados em memória apenas (não persistente)
+- Tabelas com tamanho fixo (100 usuários, 500 tarefas)
+- Sem backup ou recuperação de dados
+
+### Funcionalidades Ausentes
+- Autenticação/autorização
+- Persistência de dados
+- API ou interface web
+- Relatórios avançados
+- Notificações
+- Histórico de alterações
+
+### Limitações de Busca
+- Busca por tag é exata (não parcial)
+- Não há busca por título ou descrição
+- Sem ordenação ou filtros avançados
+
+## Ambiente de Execução
+
+### Docker
+- Imagem base: `debian:stable-slim`
+- Compilador: GnuCOBOL
+- Compilação: `cobc -x -o todoapp todoapp.cbl`
+- Execução: Interativa via terminal
+
+### Dependências
+- Docker
+- GnuCOBOL (instalado automaticamente)
+
+## Pontos Fortes do Código
+
+1. **Estrutura Modular**: Código bem organizado em paragrafos
+2. **Validações**: Implementa regras de negócio consistentes
+3. **Tratamento de Erros**: Mensagens claras de erro
+4. **Documentação**: Comentários explicativos
+5. **Containerização**: Fácil deploy e execução
+6. **Padrões COBOL**: Segue convenções da linguagem
+
+## Oportunidades de Melhoria
+
+1. **Persistência**: Implementar arquivo de dados
+2. **Validações**: Melhorar validação de datas e IDs
+3. **Busca**: Implementar busca parcial/fuzzy
+4. **Interface**: Adicionar interface gráfica
+5. **Segurança**: Implementar controle de acesso
+6. **Performance**: Otimizar algoritmos de busca
+7. **Relatórios**: Adicionar funcionalidades de relatório
+
+## Considerações para Modernização
+
+### Migração para Spring Boot
+- Transformar estruturas COBOL em entidades JPA
+- Implementar repository pattern
+- Adicionar validações Bean Validation
+- Criar REST APIs
+- Implementar segurança com Spring Security
+
+### Interface React
+- Desenvolver SPA para substituir menu CLI
+- Implementar CRUD completo
+- Adicionar dashboard e relatórios
+- Integrar com backend Spring via REST
+- Implementar estado global (Redux/Context)
+
+### Banco de Dados
+- Migrar de arrays em memória para PostgreSQL/MySQL
+- Implementar relacionamentos entre entidades
+- Adicionar índices para performance
+- Implementar auditoria de alterações
+
+## Conclusão
+
+O sistema TODO em COBOL apresenta uma implementação sólida e funcional de um gerenciador de tarefas, com estrutura bem definida e regras de negócio claras. Embora tenha limitações técnicas inerentes à linguagem e arquitetura escolhida, serve como base sólida para modernização usando tecnologias contemporâneas como Spring Boot e React.
+
+A migração deve preservar as regras de negócio identificadas, expandindo as funcionalidades e melhorando a experiência do usuário através de interfaces modernas e persistência adequada de dados.
