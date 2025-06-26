@@ -1,6 +1,9 @@
 package com.hackathon_AI.repositories;
 
+<<<<<<< repositories
+=======
 
+>>>>>>> dev
 import com.hackathon_AI.model.Task;
 import com.hackathon_AI.model.User;
 import java.util.List;
