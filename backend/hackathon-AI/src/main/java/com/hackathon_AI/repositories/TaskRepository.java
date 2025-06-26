@@ -1,6 +1,5 @@
 package com.hackathon_AI.repositories;
 
-
 import com.hackathon_AI.model.Task;
 import com.hackathon_AI.model.User;
 import java.util.List;
@@ -18,7 +17,7 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findByAssignee(User assignee);
     
     // 2. Buscar tarefas que contenham uma tag (busca parcial)
-    @Query("SELECT t FROM Task t JOIN t.tags tag WHERE tag LIKE %:tagPattern%")
+    @Query("SELECT t FROM Task t JOIN t.tags tag WHERE tag LIKE CONCAT('%', :tagPattern, '%')")
     List<Task> findTasksByTagsContaining(@Param("tagPattern") String tagPattern);
     
     // 3. Busca por tag exata

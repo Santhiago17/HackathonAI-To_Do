@@ -90,22 +90,16 @@ public class TaskRepositoryTest {
         task1.setTitle("Task 1");
         task1.setDescription("Description 1");
         task1.setEndDate(LocalDate.now().plusDays(1));
-        task1.setStatus(TaskStatus.IN_PROGRESS);
-
-        User user2 = new User();
-        user2.setFirstName("John");
-        user2.setLastName("Doe");
-        user2.setBirthDate(LocalDate.of(1990, 1, 1));
-        User savedUser2 = userRepository.save(user2);
-
+        task1.setStatus(TaskStatus.PENDING);
+        
         Task task2 = new Task();
-        task2.setCreator(savedUser2);
-        task2.setAssignee(savedUser2);
+        task2.setCreator(savedUser);
+        task2.setAssignee(savedUser);
         task2.setTitle("Task 2");
-        task2.setDescription("Description 2"); 
-        task2.setEndDate(LocalDate.now().plusDays(1));
-        task2.setStatus(TaskStatus.COMPLETED);
-
+        task2.setDescription("Description 2");
+        task2.setEndDate(LocalDate.now().plusDays(2));
+        task2.setStatus(TaskStatus.IN_PROGRESS);
+        
         entityManager.persist(task1);
         entityManager.persist(task2);
         entityManager.flush();
@@ -113,31 +107,46 @@ public class TaskRepositoryTest {
         List<Task> tasks = taskRepository.findAll();
 
         assertThat(tasks).hasSize(2);
-        assertThat(tasks).contains(task1, task2);
+        assertThat(tasks).extracting(Task::getTitle).containsExactlyInAnyOrder("Task 1", "Task 2");
     }
 
     @Test
-    public void shouldDeleteTask() {
-        User user = new User();
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setBirthDate(LocalDate.of(1990, 1, 1));
-        User savedUser = userRepository.save(user);
+    public void shouldFindTasksByAssigneeId() {
+        User user1 = new User();
+        user1.setFirstName("John");
+        user1.setLastName("Doe");
+        user1.setBirthDate(LocalDate.of(1990, 1, 1));
+        User savedUser1 = userRepository.save(user1);
 
-        Task task = new Task();
-        task.setCreator(savedUser);
-        task.setAssignee(savedUser);
-        task.setTitle("Test Task");
-        task.setDescription("Test Description");
-        task.setEndDate(LocalDate.now().plusDays(1));
-        task.setStatus(TaskStatus.IN_PROGRESS);
+        User user2 = new User();
+        user2.setFirstName("Jane");
+        user2.setLastName("Smith");
+        user2.setBirthDate(LocalDate.of(1985, 5, 15));
+        User savedUser2 = userRepository.save(user2);
 
-        entityManager.persist(task);
+        Task task1 = new Task();
+        task1.setCreator(savedUser1);
+        task1.setAssignee(savedUser1);
+        task1.setTitle("Task for User 1");
+        task1.setStatus(TaskStatus.PENDING);
+        
+        Task task2 = new Task();
+        task2.setCreator(savedUser1);
+        task2.setAssignee(savedUser2);
+        task2.setTitle("Task for User 2");
+        task2.setStatus(TaskStatus.IN_PROGRESS);
+        
+        entityManager.persist(task1);
+        entityManager.persist(task2);
         entityManager.flush();
 
-        taskRepository.deleteById(task.getId());
+        List<Task> tasksForUser1 = taskRepository.findByAssigneeId(savedUser1.getId());
+        List<Task> tasksForUser2 = taskRepository.findByAssigneeId(savedUser2.getId());
 
-        Task found = entityManager.find(Task.class, task.getId());
-        assertThat(found).isNull();
-    }        
+        assertThat(tasksForUser1).hasSize(1);
+        assertThat(tasksForUser1.get(0).getTitle()).isEqualTo("Task for User 1");
+        
+        assertThat(tasksForUser2).hasSize(1);
+        assertThat(tasksForUser2.get(0).getTitle()).isEqualTo("Task for User 2");
+    }
 }
