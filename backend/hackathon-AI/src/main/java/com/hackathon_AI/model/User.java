@@ -1,4 +1,4 @@
-package com.hackathon_AI.entities;
+package com.hackathon_AI.model;
 
 import java.time.LocalDate;
 import jakarta.persistence.*;

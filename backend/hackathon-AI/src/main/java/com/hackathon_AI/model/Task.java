@@ -1,4 +1,4 @@
-package com.hackathon_AI.entities;
+package com.hackathon_AI.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,9 +34,19 @@ public class Task {
     @Column(name = "tag")
     private List<String> tags = new ArrayList<>();
     private String priority;
-    private String status;
+    private TaskStatus status;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
