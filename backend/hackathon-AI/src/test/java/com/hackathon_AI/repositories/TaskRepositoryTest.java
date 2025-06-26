@@ -11,8 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import com.hackathon_AI.entities.Task;
-import com.hackathon_AI.entities.User;
+import com.hackathon_AI.model.Task;
+import com.hackathon_AI.model.TaskStatus;
+import com.hackathon_AI.model.User;
 
 @DataJpaTest
 public class TaskRepositoryTest {
@@ -32,13 +33,13 @@ public class TaskRepositoryTest {
         user.setBirthDate(LocalDate.of(1990, 1, 1));
         User savedUser = userRepository.save(user);
 
-        
         Task task = new Task();
         task.setCreator(savedUser);
+        task.setAssignee(savedUser);
         task.setTitle("Test Task");
         task.setDescription("Test Description");
-        task.setEndDate(LocalDate.now());
-        task.setStatus("Completed");
+        task.setEndDate(LocalDate.now().plusDays(1));
+        task.setStatus(TaskStatus.COMPLETED);
 
         Task savedTask = taskRepository.save(task);
         Task foundTask = entityManager.find(Task.class, savedTask.getId());
@@ -60,10 +61,11 @@ public class TaskRepositoryTest {
 
         Task task = new Task();
         task.setCreator(savedUser);
+        task.setAssignee(savedUser);
         task.setTitle("Test Task");
         task.setDescription("Test Description");
-        task.setEndDate(LocalDate.now());
-        task.setStatus("Completed");
+        task.setEndDate(LocalDate.now().plusDays(1));
+        task.setStatus(TaskStatus.COMPLETED);
         
         entityManager.persist(task);
         entityManager.flush();
@@ -84,10 +86,11 @@ public class TaskRepositoryTest {
 
         Task task1 = new Task();
         task1.setCreator(savedUser);
+        task1.setAssignee(savedUser);
         task1.setTitle("Task 1");
         task1.setDescription("Description 1");
-        task1.setEndDate(LocalDate.now());
-        task1.setStatus("In Progress");
+        task1.setEndDate(LocalDate.now().plusDays(1));
+        task1.setStatus(TaskStatus.IN_PROGRESS);
 
         User user2 = new User();
         user2.setFirstName("John");
@@ -97,10 +100,11 @@ public class TaskRepositoryTest {
 
         Task task2 = new Task();
         task2.setCreator(savedUser2);
+        task2.setAssignee(savedUser2);
         task2.setTitle("Task 2");
         task2.setDescription("Description 2"); 
-        task2.setEndDate(LocalDate.now());
-        task2.setStatus("Completed");
+        task2.setEndDate(LocalDate.now().plusDays(1));
+        task2.setStatus(TaskStatus.COMPLETED);
 
         entityManager.persist(task1);
         entityManager.persist(task2);
@@ -122,10 +126,11 @@ public class TaskRepositoryTest {
 
         Task task = new Task();
         task.setCreator(savedUser);
+        task.setAssignee(savedUser);
         task.setTitle("Test Task");
         task.setDescription("Test Description");
-        task.setEndDate(LocalDate.now());
-        task.setStatus("In Progress");
+        task.setEndDate(LocalDate.now().plusDays(1));
+        task.setStatus(TaskStatus.IN_PROGRESS);
 
         entityManager.persist(task);
         entityManager.flush();

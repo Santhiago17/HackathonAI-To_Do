@@ -105,6 +105,10 @@ public class TaskService {
         return taskRepository.findTasksByTagsContaining(tag);
     }
 
+    public List<Task> listAllTasks() {
+        return taskRepository.findAll();
+    }
+
     private void validateTaskInput(Task task) {
         if (task.getTitle() != null && task.getTitle().length() > 100) {
             throw new IllegalArgumentException("Title too long");

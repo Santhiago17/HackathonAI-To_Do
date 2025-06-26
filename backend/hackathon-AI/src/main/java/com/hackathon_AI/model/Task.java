@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,13 +20,21 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    
+    @NotBlank(message = "Title is required")
+    @Size(max = 100, message = "Title must not exceed 100 characters")
     private String title;
+    
+    @Size(max = 1000, message = "Description must not exceed 1000 characters")
     private String description;
     @Column(name = "end_date")
     private LocalDate endDate;
+    
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
+    
+    @NotNull(message = "Assignee is required")
     @ManyToOne
     @JoinColumn(name = "assignee_id")
     private User assignee;
