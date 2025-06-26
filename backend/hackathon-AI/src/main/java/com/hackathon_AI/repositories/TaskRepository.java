@@ -1,7 +1,8 @@
 package com.hackathon_AI.repositories;
 
-import com.hackathon_AI.entities.Task;
-import com.hackathon_AI.entities.User;
+
+import com.hackathon_AI.model.Task;
+import com.hackathon_AI.model.User;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
