@@ -6,22 +6,20 @@ import java.util.List;
 
 import com.hackathon_AI.model.TaskStatus;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class TaskDTO {
     private Integer id;
     private String title;
     private String description;
     private LocalDate endDate;
-    private Integer creatorId;
-    private Integer assigneeId;
+    private UserDTO creator;
+    private UserDTO assignee;
     private List<String> tags;
     private String priority;
     private TaskStatus status;

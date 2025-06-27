@@ -1,8 +1,12 @@
 package com.hackathon_AI.controllers;
 
+import com.hackathon_AI.dto.CreateTaskDTO;
+import com.hackathon_AI.dto.TaskDTO;
+import com.hackathon_AI.dto.TaskUpdateDTO;
 import com.hackathon_AI.model.Task;
 import com.hackathon_AI.services.TaskService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,23 +17,19 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/tasks")
 @CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class TaskController {
-
     private final TaskService taskService;
 
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
-
     @PostMapping
-    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task) {
-        Task createdTask = taskService.createTask(task);
+    public ResponseEntity<TaskDTO> createTask(@Valid @RequestBody CreateTaskDTO task) {
+        TaskDTO createdTask = taskService.createTask(task);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
     @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks() {
-        List<Task> tasks = taskService.listAllTasks();
+    public ResponseEntity<List<TaskDTO>> getAllTasks() {
+        List<TaskDTO> tasks = taskService.listAllTasks();
         return ResponseEntity.ok(tasks);
     }
 
@@ -49,8 +49,8 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Integer id, @Valid @RequestBody Task task) {
-        Task updatedTask = taskService.updateTask(id, task);
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Integer id, @Valid @RequestBody TaskUpdateDTO task) {
+        TaskDTO updatedTask = taskService.updateTask(id, task);
         return ResponseEntity.ok(updatedTask);
     }
 

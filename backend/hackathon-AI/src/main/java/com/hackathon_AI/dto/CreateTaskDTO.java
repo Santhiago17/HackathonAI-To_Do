@@ -5,10 +5,10 @@ import java.util.List;
 
 import com.hackathon_AI.model.TaskStatus;
 
+import com.hackathon_AI.validation.constraints.ValidPriority;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,13 +35,14 @@ public class CreateTaskDTO {
     @NotNull(message = "Creator user ID is required")
     private Integer creatorId;
 
+    @NotNull(message = "Assignee user ID is required")
     private Integer assigneeId;
 
     @Size(max = 7, message = "Maximum of 7 tags allowed")
     private List<@Size(max = 30, message = "Each tag must have less than 30 characters") String> tags;
 
     @NotBlank(message = "Priority is required")
-    @Pattern(regexp = "Low|Medium|High", message = "Priority must be Low, Medium, or High")
+    @ValidPriority
     private String priority;
 
     @NotNull(message = "Status is required")
