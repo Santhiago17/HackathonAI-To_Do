@@ -1,5 +1,5 @@
-import type { NavItem } from "@/components/MainLayout/NavButtons/types"
-import { SideBar } from "@/components/MainLayout/SideBar"
+import type { NavItem } from "@/components/main-layout/NavButtons"
+import { SideBar } from "@/components/main-layout/SideBar"
 import { FileEditIcon, HomeIcon, ListChecksIcon, UsersIcon } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 
