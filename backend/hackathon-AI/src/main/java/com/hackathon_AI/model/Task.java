@@ -37,6 +37,7 @@ public class Task {
     @Column(name = "tag")
     private List<String> tags = new ArrayList<>();
     private String priority;
+    @Enumerated(EnumType.STRING)
     private TaskStatus status;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
