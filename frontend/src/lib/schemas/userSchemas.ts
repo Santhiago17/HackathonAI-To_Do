@@ -1,17 +1,22 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const createUserSchema = z.object({
-  name: z.string().min(1, { message: "Nome é obrigatório." }),
-  email: z.string().email({ message: "Email inválido." }).min(1, { message: "Email é obrigatório." }),
-  password: z.string().min(6, { message: "Senha deve ter no mínimo 6 caracteres." }),
-});
-
-export type CreateUserType = z.infer<typeof createUserSchema>;
+  firstName: z.string().min(1, { message: 'Primeiro nome é obrigatório.' }),
+  lastName: z.string().min(1, { message: 'Último nome é obrigatório.' }),
+  birthDate: z
+    .string()
+    .min(8, { message: 'Data de nascimento deve ter 8 caracteres (YYYYMMDD).' })
+    .max(8, { message: 'Data de nascimento deve ter 8 caracteres (YYYYMMDD).' })
+})
 
 export const updateUserSchema = z.object({
-  name: z.string().min(1, { message: "Nome é obrigatório." }).optional(),
-  email: z.string().email({ message: "Email inválido." }).min(1, { message: "Email é obrigatório." }).optional(),
-  // Password is not updated via this form as per user request
-});
+  firstName: z.string().min(1, { message: 'Primeiro nome é obrigatório.' }),
+  lastName: z.string().min(1, { message: 'Último nome é obrigatório.' }),
+  birthDate: z
+    .string()
+    .min(8, { message: 'Data de nascimento deve ter 8 caracteres (YYYYMMDD).' })
+    .max(8, { message: 'Data de nascimento deve ter 8 caracteres (YYYYMMDD).' })
+})
 
-export type UpdateUserType = z.infer<typeof updateUserSchema>;
+export type CreateUserType = z.infer<typeof createUserSchema>
+export type UpdateUserType = z.infer<typeof updateUserSchema>

@@ -1,56 +1,58 @@
-import type { NavItem } from "@/components/main-layout/NavButtons"
-import { SideBar } from "@/components/main-layout/SideBar"
-import { FileEditIcon, HomeIcon, ListChecksIcon, UsersIcon } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import type { NavItem } from '@/components/main-layout/NavButtons'
+import { SideBar } from '@/components/main-layout/SideBar'
+import { FileEditIcon, HomeIcon, ListChecksIcon, UsersIcon } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export function MainLayout() {
   const navigate = useNavigate()
   const button = {
-    text: "Create Task",
+    text: 'Create Task',
     onClick: () => {
-      navigate("/create-task")
-    },
+      navigate('/create-task')
+    }
   }
-  const userName = "Compass UOL"
+  const userName = 'Compass Uol'
   const navItems: NavItem[] = [
     {
       icon: <HomeIcon className="mr-2 h-4 w-4" />,
-      label: "Home",
-      path: "/",
+      label: 'Home',
+      path: '/'
     },
     {
       icon: <ListChecksIcon className="mr-2 h-4 w-4" />,
-      label: "Task assigned",
-      path: "/task-assigned",
+      label: 'Task assigned',
+      path: '/task-assigned'
     },
     {
       icon: <UsersIcon className="mr-2 h-4 w-4" />,
-      label: "List Users",
-      path: "/list-users",
+      label: 'List Users',
+      path: '/users'
     },
     {
       icon: <ListChecksIcon className="mr-2 h-4 w-4" />,
-      label: "List All Task",
-      path: "/list-all-task",
+      label: 'List All Task',
+      path: '/list-all-task'
     },
     {
       icon: <UsersIcon className="mr-2 h-4 w-4" />,
-      label: "Create Users",
-      path: "/create-users",
+      label: 'Create Users',
+      path: '/users/new'
     },
     {
       icon: <FileEditIcon className="mr-2 h-4 w-4" />,
-      label: "Edit task",
-      path: "/edit-task",
-    },
+      label: 'Edit task',
+      path: '/edit-task'
+    }
   ]
 
   return (
-    <SideBar
-      userName={userName}
-      navItems={navItems}
-      buttonText={button.text}
-      onButtonClick={button.onClick}
-    />
+    <div className="relative flex">
+      <SideBar
+        userName={userName}
+        navItems={navItems}
+        buttonText={button.text}
+        onButtonClick={button.onClick}
+      />
+    </div>
   )
 }
