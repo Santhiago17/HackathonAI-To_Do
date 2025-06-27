@@ -1,9 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { PlusCircleIcon, BellIcon, SearchIcon } from 'lucide-react'
 import { Outlet } from 'react-router-dom'
-import { UserProfile } from '../UserProfile'
-import { NavButtons } from '../NavButtons'
-import type { SideBarProps } from './types'
+import { UserProfile, type UserProfileProps } from './UserProfile'
+import { NavButtons, type NavButtonsProps } from './NavButtons'
+
+export type SideBarProps = UserProfileProps &
+  NavButtonsProps & {
+    buttonText: string
+    onButtonClick: () => void
+  }
 
 export function SideBar({
   userName,

@@ -1,5 +1,15 @@
-import type { NavButtonsProps } from './types'
-import { NavLink } from 'react-router-dom'
+import type { ReactNode } from "react"
+import { NavLink } from "react-router-dom"
+
+export type NavButtonsProps = {
+  navItems: NavItem[]
+}
+
+export type NavItem = {
+  icon: ReactNode
+  label: string
+  path: string
+}
 
 export function NavButtons({ navItems }: NavButtonsProps) {
   return (
