@@ -1,6 +1,7 @@
 package com.hackathon_AI.model;
 
 import java.time.LocalDate;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,9 +26,4 @@ public class User {
     private LocalDate birthDate;
     @Transient
     private Integer age;
-
-    public Integer getAge() {
-        if (birthDate == null) return null;
-        return LocalDate.now().getYear() - birthDate.getYear();
-    }
 }

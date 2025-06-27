@@ -1,4 +1,6 @@
-import type { UserProfileProps } from "./types"
+export type UserProfileProps = {
+  userName: string
+}
 
 export function UserProfile({ userName }: UserProfileProps) {
   return (
