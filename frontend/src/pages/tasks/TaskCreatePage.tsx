@@ -57,7 +57,7 @@ export function TaskCreatePage() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-6">
-        <Card className="bg-[#252525] border-none text-white max-w-md mx-auto w-96">
+        <Card className="bg-[#252525] border-none text-white mx-auto w-[600px]">
           <div className="p-4">
             <h2 className="text-sm font-medium">Criar Tarefa</h2>
           </div>

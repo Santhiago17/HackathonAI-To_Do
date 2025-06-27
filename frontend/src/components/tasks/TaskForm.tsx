@@ -37,11 +37,14 @@ export function TaskForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       const processedData = {
         ...formData,
-        tags: tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
+        tags: tagsInput
+          .split(',')
+          .map(tag => tag.trim())
+          .filter(tag => tag.length > 0)
       }
       await onSubmit(processedData)
     } catch (error) {
@@ -66,7 +69,7 @@ export function TaskForm({
           placeholder="Digite o título da tarefa"
           className="bg-[#1a1a1a] border-gray-600 text-white placeholder-gray-400"
           value={formData.title}
-          onChange={(e) => handleInputChange('title', e.target.value)}
+          onChange={e => handleInputChange('title', e.target.value)}
           required
         />
       </div>
@@ -79,7 +82,7 @@ export function TaskForm({
           placeholder="Digite a descrição da tarefa"
           className="w-full min-h-[100px] px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.description}
-          onChange={(e) => handleInputChange('description', e.target.value)}
+          onChange={e => handleInputChange('description', e.target.value)}
           required
         />
       </div>
@@ -91,7 +94,7 @@ export function TaskForm({
         <select
           className="w-full px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.assignee}
-          onChange={(e) => handleInputChange('assignee', e.target.value)}
+          onChange={e => handleInputChange('assignee', e.target.value)}
           required
         >
           <option value="">Selecione um responsável</option>
@@ -110,7 +113,12 @@ export function TaskForm({
         <select
           className="w-full px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.priority}
-          onChange={(e) => handleInputChange('priority', e.target.value as 'low' | 'medium' | 'high')}
+          onChange={e =>
+            handleInputChange(
+              'priority',
+              e.target.value as 'low' | 'medium' | 'high'
+            )
+          }
         >
           <option value="low">Baixa</option>
           <option value="medium">Média</option>
@@ -125,7 +133,12 @@ export function TaskForm({
         <select
           className="w-full px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.status}
-          onChange={(e) => handleInputChange('status', e.target.value as 'todo' | 'in-progress' | 'review' | 'done')}
+          onChange={e =>
+            handleInputChange(
+              'status',
+              e.target.value as 'todo' | 'in-progress' | 'review' | 'done'
+            )
+          }
         >
           <option value="todo">A Fazer</option>
           <option value="in-progress">Em Progresso</option>
@@ -142,7 +155,7 @@ export function TaskForm({
           placeholder="Ex: frontend, urgente, bug"
           className="bg-[#1a1a1a] border-gray-600 text-white placeholder-gray-400"
           value={tagsInput}
-          onChange={(e) => setTagsInput(e.target.value)}
+          onChange={e => setTagsInput(e.target.value)}
         />
       </div>
 
@@ -154,14 +167,14 @@ export function TaskForm({
           type="date"
           className="bg-[#1a1a1a] border-gray-600 text-white"
           value={formData.endDate}
-          onChange={(e) => handleInputChange('endDate', e.target.value)}
+          onChange={e => handleInputChange('endDate', e.target.value)}
         />
       </div>
 
       <Button
         type="submit"
         disabled={isLoading}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+        className="w-full bg-orange-500 hover:bg-orange-600 text-white"
       >
         {isLoading ? 'Criando...' : 'Criar Tarefa'}
       </Button>
