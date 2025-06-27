@@ -1,28 +1,24 @@
-// src/components/tasks/TaskCard.tsx
 import React from 'react';
 import type { Task, Priority, Status } from '@/types/Task';
-import type { User } from "@/services/userService";
 import { Button } from '@/components/ui/button';
+import type { User } from '@/types/User';
 
 interface TaskCardProps {
   task: Task;
-  assigneeUser?: User; // O usuário responsável pela tarefa
-  creatorUser?: User; // O usuário que criou a tarefa (assumindo que task.creator é o ID)
+  assigneeUser?: User;
+  creatorUser?: User;
   onDelete: (taskId: string) => void;
-  // onEdit: (taskId: string) => void; // Adicionar se você tiver um botão de edição
 }
 
-// Helper para mapear prioridade para cor (ajustado para minúsculas)
 const getPriorityColor = (priority: Priority): string => {
   switch (priority) {
     case 'high': return 'bg-red-500 text-white';
     case 'medium': return 'bg-yellow-500 text-gray-900';
     case 'low': return 'bg-green-500 text-white';
-    default: return 'bg-gray-200 text-gray-800'; // Fallback genérico, embora o tipo Priority garanta que não haja 'default'
+    default: return 'bg-gray-200 text-gray-800';
   }
 };
 
-// Helper para mapear status para cor (sem alterações, já usava o tipo Status)
 const getStatusColor = (status: Status): string => {
   switch (status) {
     case 'todo': return 'bg-blue-500 text-white';
@@ -44,10 +40,10 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, assigneeUser, creatorU
         <h3 className="text-xl font-semibold text-gray-800">{task.title}</h3>
         <div className="flex items-center space-x-2">
           <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(task.priority)}`}>
-            Prioridade: {task.priority.toUpperCase()} {/* Exibir em maiúsculas */}
+            Prioridade: {task.priority.toUpperCase()}
           </span>
           <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(task.status)}`}>
-            Status: {task.status.toUpperCase()} {/* Exibir em maiúsculas */}
+            Status: {task.status.toUpperCase()}
           </span>
         </div>
       </div>
@@ -77,7 +73,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({ task, assigneeUser, creatorU
       </div>
 
       <div className="flex justify-end space-x-3">
-        {/* <Button variant="outline" size="sm" onClick={() => onEdit(task.id)}>Editar</Button> */}
         <Button variant="destructive" size="sm" onClick={() => onDelete(task.id)}>Excluir</Button>
       </div>
     </div>

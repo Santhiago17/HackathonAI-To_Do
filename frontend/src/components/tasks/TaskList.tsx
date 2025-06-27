@@ -9,9 +9,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import type { Task } from "@/types/Task";
-import type { User } from "@/services/userService";
+import type { User } from "@/types/User";
 
-// Helper function to get priority class
 const getPriorityClass = (priority: string): string => {
   const classes = {
     'high': 'text-red-600 font-bold',
@@ -21,7 +20,6 @@ const getPriorityClass = (priority: string): string => {
   return classes[priority as keyof typeof classes] || '';
 };
 
-// Helper function to get status class
 const getStatusClass = (status: string): string => {
   const classes = {
     'todo': 'bg-gray-200 text-gray-800',
@@ -53,13 +51,11 @@ export function TaskList({ tasks, users, isLoading, error, onDelete }: TaskListP
     return <p>Nenhuma tarefa encontrada.</p>;
   }
 
-  // Function to get user name by ID
   const getUserName = (userId: string): string => {
     const user = users.find(u => u.id === userId);
     return user ? user.name : 'Usuário desconhecido';
   };
 
-  // Sort tasks by user name alphabetically
   const sortedTasks = [...tasks].sort((a, b) => {
     const userNameA = getUserName(a.assignee).toLowerCase();
     const userNameB = getUserName(b.assignee).toLowerCase();
