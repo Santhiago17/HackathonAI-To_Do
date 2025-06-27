@@ -2,10 +2,8 @@ package com.hackathon_AI.dto;
 
 import java.time.LocalDate;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,12 +14,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateUserDTO {
+    @Schema(description = "First name of the user", example = "John", type = "string")
     @NotBlank(message = "First name is required")
     @Size(max = 30, message = "First name can have at most 30 characters")
+    @Pattern(regexp = "^[\\p{L} .'-]+$", message = "First name must contain only letters")
     private String firstName;
 
+    @Schema(description = "Last name of the user", example = "Doe", type = "string")
     @NotBlank(message = "Last name is required")
     @Size(max = 100, message = "Last name can have at most 100 characters")
+    @Pattern(regexp = "^[\\p{L} .'-]+$", message = "Last name must contain only letters")
     private String lastName;
 
     @NotNull(message = "Birth date is required")
