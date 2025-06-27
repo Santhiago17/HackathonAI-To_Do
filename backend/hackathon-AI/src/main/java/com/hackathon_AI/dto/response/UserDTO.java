@@ -1,4 +1,4 @@
-package com.hackathon_AI.dto;
+package com.hackathon_AI.dto.response;
 
 import java.time.LocalDate;
 import java.time.Period;

@@ -1,9 +1,9 @@
 package com.hackathon_AI.controllers;
 
-import com.hackathon_AI.dto.CreateTaskDTO;
-import com.hackathon_AI.dto.TaskDTO;
-import com.hackathon_AI.dto.TaskUpdateDTO;
-import com.hackathon_AI.model.Task;
+import com.hackathon_AI.dto.request.CreateTaskDTO;
+import com.hackathon_AI.dto.request.UpdateTaskStatusDTO;
+import com.hackathon_AI.dto.response.TaskDTO;
+import com.hackathon_AI.dto.request.UpdateTaskDTO;
 import com.hackathon_AI.services.TaskService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -34,33 +33,26 @@ public class TaskController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Task>> getTasksByUser(@PathVariable Integer userId) {
-        List<Task> tasks = taskService.listTasksByUser(userId);
+    public ResponseEntity<List<TaskDTO>> getTasksByUser(@PathVariable Integer userId) {
+        List<TaskDTO> tasks = taskService.listTasksByUser(userId);
         return ResponseEntity.ok(tasks);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<Task>> searchTasksByTag(@RequestParam String tag) {
-        if (tag == null || tag.trim().isEmpty()) {
-            throw new IllegalArgumentException("Tag parameter is required and cannot be empty");
-        }
-        List<Task> tasks = taskService.searchTasksByTag(tag);
+    public ResponseEntity<List<TaskDTO>> searchTasksByTag(@RequestParam String tag) {
+        List<TaskDTO> tasks = taskService.searchTasksByTag(tag);
         return ResponseEntity.ok(tasks);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskDTO> updateTask(@PathVariable Integer id, @Valid @RequestBody TaskUpdateDTO task) {
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Integer id, @Valid @RequestBody UpdateTaskDTO task) {
         TaskDTO updatedTask = taskService.updateTask(id, task);
         return ResponseEntity.ok(updatedTask);
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<Task> updateTaskStatus(@PathVariable Integer id, @RequestBody Map<String, String> statusUpdate) {
-        String newStatus = statusUpdate.get("status");
-        if (newStatus == null || newStatus.trim().isEmpty()) {
-            throw new IllegalArgumentException("Status is required and cannot be empty");
-        }
-        Task updatedTask = taskService.updateTaskStatus(id, newStatus);
+    public ResponseEntity<TaskDTO> updateTaskStatus(@PathVariable Integer id, @RequestBody UpdateTaskStatusDTO newStatus) {
+        TaskDTO updatedTask = taskService.updateTaskStatus(id, newStatus);
         return ResponseEntity.ok(updatedTask);
     }
 

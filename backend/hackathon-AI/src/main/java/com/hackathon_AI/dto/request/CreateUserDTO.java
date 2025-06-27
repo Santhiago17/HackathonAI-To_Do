@@ -1,4 +1,4 @@
-package com.hackathon_AI.dto;
+package com.hackathon_AI.dto.request;
 
 import java.time.LocalDate;
 

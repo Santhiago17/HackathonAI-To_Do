@@ -1,7 +1,7 @@
 package com.hackathon_AI.services;
 
-import com.hackathon_AI.dto.CreateUserDTO;
-import com.hackathon_AI.dto.UserDTO;
+import com.hackathon_AI.dto.request.CreateUserDTO;
+import com.hackathon_AI.dto.response.UserDTO;
 import com.hackathon_AI.model.User;
 import com.hackathon_AI.repositories.UserRepository;
 import com.hackathon_AI.utils.Converter;

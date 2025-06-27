@@ -1,4 +1,4 @@
-package com.hackathon_AI.dto;
+package com.hackathon_AI.dto.request;
 
 import com.hackathon_AI.validation.constraints.ValidPriority;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskUpdateDTO {
+public class UpdateTaskDTO {
     @Size(max = 100, message = "Title must have less than 100 characters")
     private String title;
     @Size(max = 1000, message = "Description must have less than 1000 characters")

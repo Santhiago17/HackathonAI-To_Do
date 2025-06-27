@@ -1,7 +1,7 @@
 package com.hackathon_AI.utils;
 
-import com.hackathon_AI.dto.TaskDTO;
-import com.hackathon_AI.dto.UserDTO;
+import com.hackathon_AI.dto.response.TaskDTO;
+import com.hackathon_AI.dto.response.UserDTO;
 import com.hackathon_AI.model.Task;
 import com.hackathon_AI.model.User;
 import lombok.RequiredArgsConstructor;

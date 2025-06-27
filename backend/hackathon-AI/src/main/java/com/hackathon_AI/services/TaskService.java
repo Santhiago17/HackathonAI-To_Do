@@ -1,10 +1,10 @@
 package com.hackathon_AI.services;
 
-import com.hackathon_AI.dto.CreateTaskDTO;
-import com.hackathon_AI.dto.TaskDTO;
-import com.hackathon_AI.dto.TaskUpdateDTO;
+import com.hackathon_AI.dto.request.CreateTaskDTO;
+import com.hackathon_AI.dto.request.UpdateTaskStatusDTO;
+import com.hackathon_AI.dto.response.TaskDTO;
+import com.hackathon_AI.dto.request.UpdateTaskDTO;
 import com.hackathon_AI.model.Task;
-import com.hackathon_AI.model.TaskStatus;
 import com.hackathon_AI.model.User;
 import com.hackathon_AI.repositories.TaskRepository;
 import com.hackathon_AI.repositories.UserRepository;
@@ -14,14 +14,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TaskService {
-
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final Converter converter;
@@ -40,7 +38,7 @@ public class TaskService {
         return converter.toTaskResponseDTO(taskRepository.save(newTask));
     }
 
-    public TaskDTO updateTask(Integer taskId, TaskUpdateDTO dto) {
+    public TaskDTO updateTask(Integer taskId, UpdateTaskDTO dto) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
@@ -65,26 +63,13 @@ public class TaskService {
         return converter.toTaskResponseDTO(taskRepository.save(task));
     }
 
-    public Task updateTaskStatus(Integer taskId, String newStatus) {
+    public TaskDTO updateTaskStatus(Integer taskId, UpdateTaskStatusDTO newStatus) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
-        try {
-            TaskStatus statusEnum = TaskStatus.valueOf(newStatus.toUpperCase());
-            task.setStatus(statusEnum);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid status value. Allowed values: " +
-                    String.join(", ", getAllStatusValues()));
-        }
+        task.setStatus(newStatus.getStatus());
 
-        task.setUpdatedAt(LocalDateTime.now());
-        return taskRepository.save(task);
-    }
-
-    private List<String> getAllStatusValues() {
-        return List.of(TaskStatus.values()).stream()
-                .map(Enum::name)
-                .toList();
+        return converter.toTaskResponseDTO(taskRepository.save(task));
     }
 
     public void deleteTask(Integer taskId) {
@@ -94,15 +79,15 @@ public class TaskService {
         taskRepository.deleteById(taskId);
     }
 
-    public List<Task> listTasksByUser(Integer userId) {
-        return taskRepository.findByAssigneeId(userId);
+    public List<TaskDTO> listTasksByUser(Integer userId) {
+        return converter.toTaskResponseDTOList(taskRepository.findByAssigneeId(userId));
     }
 
-    public List<Task> searchTasksByTag(String tag) {
-        return taskRepository.findTasksByTagsContaining(tag);
+    public List<TaskDTO> searchTasksByTag(String tag) {
+        return converter.toTaskResponseDTOList(taskRepository.findTasksByTagsContaining(tag));
     }
 
     public List<TaskDTO> listAllTasks() {
-        return converter.convertList(taskRepository.findAll(), TaskDTO.class);
+        return converter.toTaskResponseDTOList(taskRepository.findAll());
     }
 }
