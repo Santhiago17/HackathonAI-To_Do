@@ -1,54 +1,52 @@
-// src/__mocks__/userMocks.ts
-
-import type { User } from '../../types/User'; // <<< IMPORTANDO User DO LOCAL CORRETO
+import type { User } from '../../types/User'
 
 export const mockUsers: User[] = [
   {
     id: '1',
-    firstName: 'João', // <<< Adicionado
-    lastName: 'Silva Oliveira', // <<< Adicionado
+    firstName: 'João',
+    lastName: 'Silva Oliveira',
     name: 'João Silva Oliveira',
-    birthDate: '19900101', // <<< Adicionado no formato COBOL
+    birthDate: '1990-01-01'
     // email: 'joao.oliveira@mainframe.com' // Remova se não estiver no tipo User
   },
   {
     id: '2',
-    firstName: 'Maria', // <<< Adicionado
-    lastName: 'Souza Santos', // <<< Adicionado
+    firstName: 'Maria',
+    lastName: 'Souza Santos',
     name: 'Maria Souza Santos',
-    birthDate: '19850515', // <<< Adicionado
+    birthDate: '1985-05-15'
     // email: 'maria.souza@datacenter.com'
   },
   {
     id: '3',
-    firstName: 'Pedro', // <<< Adicionado
-    lastName: 'Santos Costa', // <<< Adicionado
+    firstName: 'Pedro',
+    lastName: 'Santos Costa',
     name: 'Pedro Santos Costa',
-    birthDate: '19921120', // <<< Adicionado
+    birthDate: '1992-11-20'
     // email: 'pedro.costa@legacy.com'
   },
   {
     id: '4',
-    firstName: 'Ana', // <<< Adicionado
-    lastName: 'Oliveira Ferreira', // <<< Adicionado
+    firstName: 'Ana',
+    lastName: 'Oliveira Ferreira',
     name: 'Ana Oliveira Ferreira',
-    birthDate: '19880707', // <<< Adicionado
+    birthDate: '1988-07-07'
     // email: 'ana.ferreira@cobolsystems.com'
   },
   {
     id: '5',
-    firstName: 'Carlos', // <<< Adicionado
-    lastName: 'Mendes Rodrigues', // <<< Adicionado
+    firstName: 'Carlos',
+    lastName: 'Mendes Rodrigues',
     name: 'Carlos Mendes Rodrigues',
-    birthDate: '19950325', // <<< Adicionado
+    birthDate: '1995-03-25'
     // email: 'carlos.rodrigues@mainframepro.com'
   }
-];
+]
 
 export const getMockUsers = (): User[] => {
-  return [...mockUsers];
-};
+  return [...mockUsers]
+}
 
 export const getMockUserById = (id: string): User | undefined => {
-  return mockUsers.find(user => user.id === id);
-};
+  return mockUsers.find(user => user.id === id)
+}
