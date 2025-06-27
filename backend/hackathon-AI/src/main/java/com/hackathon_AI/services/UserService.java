@@ -19,19 +19,11 @@ public class UserService {
     private final Converter converter;
 
     public UserDTO createUser(CreateUserDTO user) {
-        validateUserAge(user.getBirthDate());
         User newUser = userRepository.save(converter.convertObject(user, User.class));
         return converter.convertObject(newUser, UserDTO.class);
     }
     
     public List<UserDTO> listAllUsers() {
         return converter.convertList(userRepository.findAll(), UserDTO.class);
-    }
-    
-    private void validateUserAge(LocalDate birthDate) {
-        int age = Period.between(birthDate, LocalDate.now()).getYears();
-        if (age < 18) {
-            throw new IllegalArgumentException("User must be at least 18 years old");
-        }
     }
 }

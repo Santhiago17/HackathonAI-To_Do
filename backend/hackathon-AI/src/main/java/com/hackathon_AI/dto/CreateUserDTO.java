@@ -2,6 +2,7 @@ package com.hackathon_AI.dto;
 
 import java.time.LocalDate;
 
+import com.hackathon_AI.validation.constraints.MinimumAge;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -28,5 +29,6 @@ public class CreateUserDTO {
 
     @NotNull(message = "Birth date is required")
     @Past(message = "Birth date must be in the past")
+    @MinimumAge
     private LocalDate birthDate;
 }
