@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import type { CreateTaskType } from '@/lib/schemas/taskSchemas'
+import {
+  createTaskSchema,
+  type CreateTaskType
+} from '@/lib/schemas/taskSchemas'
 import type { Task } from '@/types/Task'
 import type { User } from '@/types/User'
+import { ZodError } from 'zod'
 
 interface TaskFormProps {
   onSubmit: (data: CreateTaskType) => Promise<void>
@@ -35,17 +39,44 @@ export function TaskForm({
     initialData?.tags ? initialData.tags.join(', ') : ''
   )
 
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  const validateForm = (data: CreateTaskType): boolean => {
+    try {
+      createTaskSchema.parse(data)
+      setErrors({})
+      return true
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationErrors: Record<string, string> = {}
+        error.issues.forEach(issue => {
+          const field = issue.path.join('.')
+          validationErrors[field] = issue.message
+        })
+        setErrors(validationErrors)
+      }
+      return false
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     try {
+      const processedTags = tagsInput
+        .split(',')
+        .map(tag => tag.trim())
+        .filter(tag => tag.length > 0)
+
       const processedData = {
         ...formData,
-        tags: tagsInput
-          .split(',')
-          .map(tag => tag.trim())
-          .filter(tag => tag.length > 0)
+        tags: processedTags
       }
+
+      if (!validateForm(processedData)) {
+        return
+      }
+
       await onSubmit(processedData)
     } catch (error) {
       console.error('Erro ao enviar formulário:', error)
@@ -67,11 +98,16 @@ export function TaskForm({
         </label>
         <Input
           placeholder="Digite o título da tarefa"
-          className="bg-[#1a1a1a] border-gray-600 text-white placeholder-gray-400"
+          className={`bg-[#1a1a1a] border-gray-600 text-white placeholder-gray-400 ${
+            errors.title ? 'border-red-500' : ''
+          }`}
           value={formData.title}
           onChange={e => handleInputChange('title', e.target.value)}
           required
         />
+        {errors.title && (
+          <p className="text-red-400 text-sm mt-1">{errors.title}</p>
+        )}
       </div>
 
       <div>
@@ -80,11 +116,16 @@ export function TaskForm({
         </label>
         <textarea
           placeholder="Digite a descrição da tarefa"
-          className="w-full min-h-[100px] px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className={`w-full min-h-[100px] px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            errors.description ? 'border-red-500' : ''
+          }`}
           value={formData.description}
           onChange={e => handleInputChange('description', e.target.value)}
           required
         />
+        {errors.description && (
+          <p className="text-red-400 text-sm mt-1">{errors.description}</p>
+        )}
       </div>
 
       <div>
@@ -153,10 +194,15 @@ export function TaskForm({
         </label>
         <Input
           placeholder="Ex: frontend, urgente, bug"
-          className="bg-[#1a1a1a] border-gray-600 text-white placeholder-gray-400"
+          className={`bg-[#1a1a1a] border-gray-600 text-white placeholder-gray-400 ${
+            errors.tags ? 'border-red-500' : ''
+          }`}
           value={tagsInput}
           onChange={e => setTagsInput(e.target.value)}
         />
+        {errors.tags && (
+          <p className="text-red-400 text-sm mt-1">{errors.tags}</p>
+        )}
       </div>
 
       <div>
