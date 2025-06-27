@@ -1,318 +1,155 @@
-import { api } from './api';
-import type { Task, Status, Priority } from '@/types/Task';
-import type { User } from '@/types/User'; // Importa User do novo local
-import { mockConfig } from './__mocks__/mockConfig';
-import {
-  getMockTasks,
-  getMockTaskById,
-  getMockTasksByAssignee,
-  createMockTask, // Funções de CRUD mockadas
-  updateMockTask, // Funções de CRUD mockadas
-  deleteMockTask as mockDeleteTask // Renomeado para evitar conflito
-} from './__mocks__/taskMocks';
+import type { CreateTaskType } from '@/lib/schemas/taskSchemas'
+import type { Task, Status, Priority } from '@/types/Task'
+import { api } from './api'
 
-// Interface para tarefa com dados de usuário, estendendo a interface Task
-export interface TaskWithUser extends Task {
-  user?: User; // O usuário atribuído completo
-  creatorUser?: User; // O usuário criador completo
+interface BackendTask {
+  id: number
+  title: string
+  description: string
+  status: string
+  priority: string
+  assignee?: { id: number }
+  creator?: { id: number }
+  tags: string[]
+  createdAt: string
+  updatedAt: string
+  endDate?: string
 }
 
-// --- Funções de Utilidade ---
-
-// Simula atraso de rede para mocks
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Converte status do backend (ENUM como string: PENDING) para frontend (string: todo)
-const mapStatusFromBackend = (backendStatus: string): Status => {
-  const statusMap: Record<string, Status> = {
-    'PENDING': 'todo',
-    'IN_PROGRESS': 'in-progress',
-    'COMPLETED': 'done',
-    'CANCELLED': 'review'
-  };
-  return statusMap[backendStatus] || 'todo';
-};
-
-// Converte status do frontend (string: todo) para backend (string: PENDING)
 const mapStatusToBackend = (frontendStatus: Status): string => {
   const statusMap: Record<Status, string> = {
-    'todo': 'PENDING',
+    todo: 'PENDING',
     'in-progress': 'IN_PROGRESS',
-    'done': 'COMPLETED',
-    'review': 'CANCELLED'
-  };
-  return statusMap[frontendStatus] || 'PENDING';
-};
+    done: 'COMPLETED',
+    review: 'CANCELLED'
+  }
+  return statusMap[frontendStatus] || 'PENDING'
+}
 
-// Converte prioridade do backend (String numérica: "1") para frontend (Priority: 'low')
+const mapStatusFromBackend = (backendStatus: string): Status => {
+  const statusMap: Record<string, Status> = {
+    PENDING: 'todo',
+    IN_PROGRESS: 'in-progress',
+    COMPLETED: 'done',
+    CANCELLED: 'review'
+  }
+  return statusMap[backendStatus] || 'todo'
+}
+
+const mapPriorityToBackend = (frontendPriority: Priority): string => {
+  const priorityMap: Record<Priority, string> = {
+    low: '1',
+    medium: '2',
+    high: '3'
+  }
+  return priorityMap[frontendPriority] || '2'
+}
+
 const mapPriorityFromBackend = (backendPriority: string): Priority => {
   const priorityMap: Record<string, Priority> = {
     '1': 'low',
     '2': 'medium',
     '3': 'high'
-  };
-  return priorityMap[backendPriority] || 'low';
-};
+  }
+  return priorityMap[backendPriority] || 'medium'
+}
 
-// Converte prioridade do frontend (Priority: 'low') para backend (String numérica: "1")
-const mapPriorityToBackend = (frontendPriority: Priority): string => {
-  const priorityMap: Record<Priority, string> = {
-    'low': '1',
-    'medium': '2',
-    'high': '3'
-  };
-  return priorityMap[frontendPriority] || '1';
-};
-
-// --- Funções de Mapeamento Interno (JSON da API para Task do Frontend) ---
-// Centraliza a lógica de mapeamento da resposta da API para o tipo Task do frontend
-const mapApiResponseToTask = (apiTask: any): Task => {
+const mapBackendToTask = (backendTask: BackendTask): Task => {
   return {
-    id: apiTask.id.toString(),
-    title: apiTask.title,
-    description: apiTask.description,
-    status: mapStatusFromBackend(apiTask.status),
-    priority: mapPriorityFromBackend(apiTask.priority),
-    assignee: apiTask.assignee?.id?.toString() || '', // Certifica que pega o ID do objeto assignee
-    creator: apiTask.creator?.id?.toString() || '',   // Certifica que pega o ID do objeto creator
-    tags: apiTask.tags || [],
-    createdAt: new Date(apiTask.createdAt),
-    updatedAt: new Date(apiTask.updatedAt),
-    // endDate: apiTask.endDate, // Inclua se 'endDate' estiver no seu Task.ts e backend
-  };
-};
+    id: backendTask.id?.toString() || '',
+    title: backendTask.title || '',
+    description: backendTask.description || '',
+    status: mapStatusFromBackend(backendTask.status),
+    priority: mapPriorityFromBackend(backendTask.priority),
+    assignee: backendTask.assignee?.id?.toString() || '',
+    creator: backendTask.creator?.id?.toString() || '',
+    tags: backendTask.tags || [],
+    createdAt: new Date(backendTask.createdAt || Date.now()),
+    updatedAt: new Date(backendTask.updatedAt || Date.now()),
+    endDate: backendTask.endDate || ''
+  }
+}
 
-// --- Funções de Requisições da API de Tarefas ---
+interface TaskUpdateData {
+  title?: string
+  description?: string
+  status?: string
+  priority?: string
+  tags?: string[]
+  creator?: { id: number } | string
+  assignee?: { id: number } | string
+  endDate?: string
+}
 
-// GET todas as tarefas (LIST-TASKS)
 export const getTasks = async (): Promise<Task[]> => {
-  if (mockConfig.useMockData) {
-    await delay(mockConfig.apiDelay);
-    // Os mocks devem retornar tarefas no formato Task do frontend,
-    // então o mapeamento de status/prioridade já deve ter sido feito nos mocks.
-    return getMockTasks();
-  }
-
   try {
-    const response = await api.get('/tasks');
-    if (!Array.isArray(response.data)) {
-      console.error('Erro: resposta da API de tasks não é um array', response.data);
-      return [];
-    }
-    return response.data.map(mapApiResponseToTask);
+    const response = await api.get('/tasks')
+    return response.data.map(mapBackendToTask)
   } catch (error) {
-    console.error('Erro ao buscar tarefas:', error);
-    return [];
+    console.error('Erro ao buscar tarefas:', error)
+    throw error
   }
-};
+}
 
-// GET tarefa por ID (GET-TASK-BY-ID)
-export const getTaskById = async (id: string): Promise<Task | undefined> => {
-  if (mockConfig.useMockData) {
-    await delay(mockConfig.apiDelay);
-    const mockTask = getMockTaskById(id);
-    // Se o mockTask está no formato de frontend, apenas retorne.
-    return mockTask;
-  }
-
+export const createTask = async (data: CreateTaskType): Promise<Task> => {
   try {
-    const response = await api.get(`/tasks/${id}`);
-    return mapApiResponseToTask(response.data);
-  } catch (error: any) {
-    console.error(`Erro ao buscar tarefa com id: ${id}:`, error);
-    if (error.response && error.response.status === 404) {
-      return undefined;
+    const taskData = {
+      title: data.title,
+      description: data.description,
+      priority: mapPriorityToBackend(data.priority),
+      status: mapStatusToBackend(data.status),
+      tags: data.tags,
+      creator: { id: parseInt(data.creator) },
+      assignee: { id: parseInt(data.assignee) },
+      endDate: data.endDate
     }
-    throw error;
-  }
-};
 
-// GET tarefas por atribuído (GET-TASKS-BY-ASSIGNEE)
-export const getTasksByAssignee = async (assigneeId: string): Promise<Task[]> => {
-  if (mockConfig.useMockData) {
-    await delay(mockConfig.apiDelay);
-    // Os mocks devem retornar tarefas no formato Task do frontend
-    return getMockTasksByAssignee(assigneeId);
-  }
-
-  try {
-    const response = await api.get(`/tasks/user/${assigneeId}`);
-    if (!Array.isArray(response.data)) {
-      console.error('Erro: resposta da API de tarefas por atribuído não é um array', response.data);
-      return [];
-    }
-    return response.data.map(mapApiResponseToTask);
+    const response = await api.post('/tasks', taskData)
+    console.log('Tarefa criada com sucesso:', response.data)
+    return mapBackendToTask(response.data)
   } catch (error) {
-    console.error(`Erro ao buscar tarefas para atribuído: ${assigneeId}:`, error);
-    return [];
+    console.error('Erro ao criar tarefa:', error)
+    throw error
   }
-};
+}
 
-// Criar uma nova tarefa (CREATE-TASK)
-export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Promise<Task> => {
-  if (mockConfig.useMockData) {
-    await delay(mockConfig.apiDelay);
-    // createMockTask já adiciona id, createdAt, updatedAt e retorna um Task completo.
-    return createMockTask(taskData);
-  }
-
+export const updateTask = async (
+  id: string,
+  data: Partial<Task>
+): Promise<Task> => {
   try {
-    const backendTaskData = {
-      title: taskData.title,
-      description: taskData.description,
-      creator: { id: parseInt(taskData.creator || '') },
-      assignee: { id: parseInt(taskData.assignee || '') },
-      tags: taskData.tags,
-      priority: mapPriorityToBackend(taskData.priority),
-      status: mapStatusToBackend(taskData.status),
-      // endDate: taskData.endDate, // Inclua se 'endDate' estiver no seu Task.ts e for enviado
-    };
-    
-    const response = await api.post('/tasks', backendTaskData);
-    return mapApiResponseToTask(response.data);
-  } catch (error) {
-    console.error('Erro ao criar tarefa:', error);
-    throw error;
-  }
-};
+    const taskData: TaskUpdateData = { ...data }
 
-// Atualizar uma tarefa existente (UPDATE-TASK)
-export const updateTask = async (id: string, taskData: Partial<Task>): Promise<Task> => {
-  if (mockConfig.useMockData) {
-    await delay(mockConfig.apiDelay);
-    const updatedMockTask = updateMockTask(id, taskData);
-    if (!updatedMockTask) throw new Error('Tarefa não encontrada (mock)');
-    return updatedMockTask;
-  }
-
-  try {
-    const backendTaskData: any = {};
-    
-    if (taskData.title !== undefined) backendTaskData.title = taskData.title;
-    if (taskData.description !== undefined) backendTaskData.description = taskData.description;
-    if (taskData.tags !== undefined) backendTaskData.tags = taskData.tags;
-    
-    if (taskData.status !== undefined) backendTaskData.status = mapStatusToBackend(taskData.status);
-    if (taskData.priority !== undefined) backendTaskData.priority = mapPriorityToBackend(taskData.priority);
-
-    if (taskData.creator !== undefined) {
-      backendTaskData.creator = taskData.creator ? { id: parseInt(taskData.creator) } : null;
+    if (data.creator) {
+      taskData.creator = { id: parseInt(data.creator) }
     }
-    if (taskData.assignee !== undefined) {
-      backendTaskData.assignee = taskData.assignee ? { id: parseInt(taskData.assignee) } : null;
+    if (data.assignee) {
+      taskData.assignee = { id: parseInt(data.assignee) }
     }
-    // if (taskData.endDate !== undefined) backendTaskData.endDate = taskData.endDate; // Inclua se 'endDate' estiver no seu Task.ts e for enviado
-    
-    const response = await api.put(`/tasks/${id}`, backendTaskData);
-    return mapApiResponseToTask(response.data);
-  } catch (error) {
-    console.error(`Erro ao atualizar tarefa com id: ${id}:`, error);
-    throw error;
-  }
-};
 
-// Excluir uma tarefa (REMOVE-TASK)
+    if (data.status) {
+      taskData.status = mapStatusToBackend(data.status)
+    }
+
+    if (data.priority) {
+      taskData.priority = mapPriorityToBackend(data.priority)
+    }
+
+    const response = await api.put(`/tasks/${id}`, taskData)
+    console.log('Tarefa atualizada com sucesso:', response.data)
+    return mapBackendToTask(response.data)
+  } catch (error) {
+    console.error(`Erro ao atualizar tarefa com id: ${id}:`, error)
+    throw error
+  }
+}
+
 export const deleteTask = async (id: string): Promise<void> => {
-  if (mockConfig.useMockData) {
-    await delay(mockConfig.apiDelay);
-    mockDeleteTask(id);
-    console.log(`Tarefa ${id} removida (mock)`);
-    return;
-  }
-
   try {
-    await api.delete(`/tasks/${id}`);
+    await api.delete(`/tasks/${id}`)
+    console.log(`Tarefa ${id} removida com sucesso`)
   } catch (error) {
-    console.error(`Erro ao excluir tarefa com id ${id}:`, error);
-    throw error;
+    console.error(`Erro ao excluir tarefa com id ${id}:`, error)
+    throw error
   }
-};
-
-// Atualizar status da tarefa (UPDATE-TASK-STATUS)
-export const updateTaskStatus = async (id: string, status: Status): Promise<Task> => {
-  if (mockConfig.useMockData) {
-    await delay(mockConfig.apiDelay);
-    const updatedMockTask = updateMockTask(id, { status });
-    if (!updatedMockTask) throw new Error('Tarefa não encontrada para atualização de status (mock)');
-    return updatedMockTask;
-  }
-
-  try {
-    const backendStatus = mapStatusToBackend(status);
-    const response = await api.patch(`/tasks/${id}/status`, { status: backendStatus });
-    return mapApiResponseToTask(response.data);
-  } catch (error) {
-    console.error(`Erro ao atualizar status da tarefa ${id}:`, error);
-    throw error;
-  }
-};
-
-// Buscar tarefas por tag (SEARCH-TASKS-BY-TAG)
-export const searchTasksByTag = async (tag: string): Promise<Task[]> => {
-  if (mockConfig.useMockData) {
-    await delay(mockConfig.apiDelay);
-    const allTasks = getMockTasks();
-    return allTasks.filter(task => task.tags.includes(tag));
-  }
-
-  try {
-    const response = await api.get(`/tasks/search?tag=${encodeURIComponent(tag)}`);
-    if (!Array.isArray(response.data)) {
-      console.error('Erro: resposta da API de busca por tag não é um array', response.data);
-      return [];
-    }
-    return response.data.map(mapApiResponseToTask);
-  } catch (error) {
-    console.error(`Erro ao buscar tarefas por tag "${tag}":`, error);
-    return [];
-  }
-};
-
-// Obter tarefas com dados de usuário (JOIN-TASKS-USERS)
-export const getTasksWithUsers = async (): Promise<TaskWithUser[]> => {
-  if (mockConfig.useMockData) {
-    await delay(mockConfig.apiDelay);
-    const mockTasks = getMockTasks();
-    const mockUsers = (await import('./__mocks__/userMocks')).getMockUsers();
-    
-    return mockTasks.map(task => {
-      const user = mockUsers.find(u => u.id === task.assignee);
-      const creatorUser = mockUsers.find(u => u.id === task.creator);
-      return { ...task, user, creatorUser };
-    });
-  }
-
-  try {
-    const [tasksResponse, usersResponse] = await Promise.all([
-      api.get('/tasks'),
-      api.get('/users')
-    ]);
-
-    if (!Array.isArray(tasksResponse.data) || !Array.isArray(usersResponse.data)) {
-      console.error('Erro: uma das respostas da API de tarefas/usuários não é um array');
-      return [];
-    }
-
-    // Mapeia as tarefas da API para o formato Task do frontend
-    const tasks: Task[] = tasksResponse.data.map(mapApiResponseToTask);
-
-    // Mapeia os usuários da API para o formato User do frontend
-    const users: User[] = usersResponse.data.map((user: any) => ({
-        id: user.id.toString(),
-        firstName: user.firstName,   // <<< INCLUÍDO AGORA
-        lastName: user.lastName,     // <<< INCLUÍDO AGORA
-        name: `${user.firstName} ${user.lastName}`,
-        birthDate: user.birthDate,
-        email: user.email || '' // Se houver email no backend e quiser manter no frontend
-    }));
-    
-    return tasks.map(task => {
-      const user = users.find(u => u.id === task.assignee);
-      const creatorUser = users.find(u => u.id === task.creator);
-      return { ...task, user, creatorUser };
-    });
-  } catch (error) {
-    console.error('Erro ao buscar tarefas com usuários:', error);
-    throw error;
-  }
-};
+}

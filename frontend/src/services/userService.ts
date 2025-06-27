@@ -1,46 +1,43 @@
-import type { CreateUserType } from '@/lib/schemas/userSchemas';
-import { getMockUsers, getMockUserById, mockUsers } from './__mocks__/userMocks';
-import type { User } from '@/types/User';
+import type { CreateUserType } from '@/lib/schemas/userSchemas'
+import type { User } from '@/types/User'
+import { api } from './api'
 
-const MOCK_DELAY = 500; // ms
-let nextId = mockUsers.length + 1;
+interface BackendUser {
+  id: number
+  firstName: string
+  lastName: string
+  birthDate: string
+  age?: number
+}
+
+// Função para mapear resposta do backend para User do frontend
+const mapBackendToUser = (backendUser: BackendUser): User => {
+  return {
+    id: backendUser.id.toString(),
+    firstName: backendUser.firstName,
+    lastName: backendUser.lastName,
+    name: `${backendUser.firstName} ${backendUser.lastName}`.trim(),
+    birthDate: backendUser.birthDate
+  }
+}
 
 export const getUsers = async (): Promise<User[]> => {
-  console.log('Fetching users...');
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const users = getMockUsers();
-      console.log('Mock users fetched:', users);
-      resolve(users);
-    }, MOCK_DELAY);
-  });
-};
-
-export const getUserById = async (id: string): Promise<User | undefined> => {
-  console.log(`Fetching user with id: ${id}...`);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const user = getMockUserById(id);
-      console.log('Mock user fetched:', user);
-      resolve(user);
-    }, MOCK_DELAY);
-  });
-};
+  try {
+    const response = await api.get('/users')
+    return response.data.map(mapBackendToUser)
+  } catch (error) {
+    console.error('Erro ao buscar usuários:', error)
+    throw error
+  }
+}
 
 export const createUser = async (data: CreateUserType): Promise<User> => {
-  console.log('Creating user with data:', data);
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const newUser: User = {
-        id: String(nextId++),
-        firstName: data.firstName,
-        lastName: data.lastName,
-        name: `${data.firstName} ${data.lastName}`,
-        birthDate: data.birthDate,
-      };
-      mockUsers.push(newUser);
-      console.log('Mock user created:', newUser);
-      resolve(newUser);
-    }, MOCK_DELAY);
-  });
-};
+  try {
+    const response = await api.post('/users', data)
+    console.log('Usuário criado com sucesso:', response.data)
+    return mapBackendToUser(response.data)
+  } catch (error) {
+    console.error('Erro ao criar usuário:', error)
+    throw error
+  }
+}

@@ -31,9 +31,7 @@ export function UsersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Content grid */}
       <div className="grid grid-cols-1 gap-6">
-        {/* List Users Card */}
         <Card className="bg-[#252525] border-none text-white">
           <div className="p-4 flex justify-between items-center">
             <h2 className="text-sm font-medium">List Users</h2>

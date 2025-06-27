@@ -1,8 +1,9 @@
-import axios from "axios"
+import axios from 'axios'
 
 export const api = axios.create({
-  baseURL: import.meta.env.BASE_URL,
+  baseURL: 'http://127.0.0.1:8080/api',
   headers: {
-    "Content-Type": "application/json",
-  },
+    Accept: 'application/json'
+  }
 })
+console.log(api)
