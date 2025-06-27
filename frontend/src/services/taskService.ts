@@ -1,6 +1,6 @@
 import { api } from './api';
 import type { Task, Status, Priority } from '@/types/Task';
-import type { User } from '@/types/User'; // Importa User do novo local
+import type { User } from '@/types/User';
 import { mockConfig } from './__mocks__/mockConfig';
 import {
   getMockTasks,
