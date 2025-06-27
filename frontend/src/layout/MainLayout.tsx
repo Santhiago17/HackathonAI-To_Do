@@ -8,7 +8,7 @@ export function MainLayout() {
   const button = {
     text: 'Create Task',
     onClick: () => {
-      navigate('/create-task')
+      navigate('/tasks/new')
     }
   }
   const userName = 'Compass Uol'
@@ -31,7 +31,7 @@ export function MainLayout() {
     {
       icon: <ListChecksIcon className="mr-2 h-4 w-4" />,
       label: 'List All Task',
-      path: '/list-all-task'
+      path: '/tasks'
     },
     {
       icon: <UsersIcon className="mr-2 h-4 w-4" />,
