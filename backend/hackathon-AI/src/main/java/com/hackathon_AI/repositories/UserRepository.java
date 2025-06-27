@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    // Métodos personalizados se necessário
     List<User> findByFirstNameContaining(String firstName);
     List<User> findByLastNameContaining(String lastName);
 }
