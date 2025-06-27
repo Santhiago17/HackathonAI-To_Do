@@ -1,4 +1,5 @@
 import type { User } from '@/types/User'
+import { formatDateToBrazilian } from '@/lib/utils/dateUtils'
 
 interface UserCardProps {
   user: User
@@ -11,13 +12,6 @@ const getInitials = (name: string) => {
   return `${firstName}${lastName}`.toUpperCase()
 }
 
-const formatBirthDate = (birthDate: string) => {
-  const year = birthDate.substring(0, 4)
-  const month = birthDate.substring(4, 6)
-  const day = birthDate.substring(6, 8)
-  return `${day}/${month}/${year}`
-}
-
 export function UserCard({ user }: UserCardProps) {
   return (
     <div className="flex items-center space-x-2 py-2">
@@ -27,7 +21,7 @@ export function UserCard({ user }: UserCardProps) {
       <div className="flex-1">
         <div className="text-sm text-gray-300 font-medium">{user.name}</div>
         <div className="text-xs text-gray-400">
-          Nascimento: {formatBirthDate(user.birthDate)}
+          Nascimento: {formatDateToBrazilian(user.birthDate)}
         </div>
       </div>
     </div>

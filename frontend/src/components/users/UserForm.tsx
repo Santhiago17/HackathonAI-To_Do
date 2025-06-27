@@ -13,45 +13,50 @@ import {
 import { Input } from '@/components/ui/input'
 import {
   createUserSchema,
-  updateUserSchema,
-  type CreateUserType,
+  type CreateUserType
 } from '@/lib/schemas/userSchemas'
 import type { User } from '@/types/User'
+import {
+  formatDateToAmerican,
+  formatDateToISO,
+  applyDateMask
+} from '@/lib/utils/dateUtils'
 
 interface UserFormProps {
   onSubmit: (data: CreateUserType) => Promise<void>
   initialData?: User
-  isEditMode?: boolean
   isLoading?: boolean
 }
 
 export function UserForm({
   onSubmit,
   initialData,
-  isEditMode = false,
   isLoading = false
 }: UserFormProps) {
-  const schema = isEditMode ? updateUserSchema : createUserSchema
+  const schema = createUserSchema
   type FormDataType = z.infer<typeof schema>
 
   const form = useForm<FormDataType>({
     resolver: zodResolver(schema),
-    defaultValues:
-      isEditMode && initialData
-        ? {
-            firstName: initialData.firstName,
-            lastName: initialData.lastName,
-            birthDate: initialData.birthDate
-          }
-        : {
-            firstName: '',
-            lastName: '',
-            birthDate: ''
-          }
+    defaultValues: initialData
+      ? {
+          firstName: initialData.firstName,
+          lastName: initialData.lastName,
+          birthDate: formatDateToAmerican(initialData.birthDate)
+        }
+      : {
+          firstName: '',
+          lastName: '',
+          birthDate: ''
+        }
   })
 
   const handleFormSubmit = async (data: FormDataType) => {
-    await onSubmit(data)
+    const dataToSend = {
+      ...data,
+      birthDate: formatDateToISO(data.birthDate)
+    }
+    await onSubmit(dataToSend)
   }
 
   return (
@@ -104,8 +109,13 @@ export function UserForm({
               </FormLabel>
               <FormControl>
                 <Input
-                  placeholder="YYYYMMDD (ex: 19900101)"
+                  placeholder="MM/DD/YYYY (ex: 01/15/1990)"
                   {...field}
+                  onChange={e => {
+                    const maskedValue = applyDateMask(e.target.value)
+                    field.onChange(maskedValue)
+                  }}
+                  maxLength={10}
                   className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-400 focus:border-orange-500 focus:ring-orange-500/20"
                 />
               </FormControl>
@@ -118,13 +128,7 @@ export function UserForm({
           disabled={isLoading}
           className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2.5 transition-colors duration-200"
         >
-          {isLoading
-            ? isEditMode
-              ? 'Salvando...'
-              : 'Criando...'
-            : isEditMode
-            ? 'Salvar Alterações'
-            : 'Criar Usuário'}
+          {isLoading ? 'Criando...' : 'Criar Usuário'}
         </Button>
       </form>
     </Form>
