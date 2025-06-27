@@ -23,7 +23,7 @@ export function MainLayout() {
   const footerButton = {
     buttonText: "Create Task",
     onButtonClick: () => {
-      navigate("/create-task")
+      navigate("/tasks/new")
       setPageName("Create Task")
     },
   }
@@ -46,8 +46,8 @@ export function MainLayout() {
     },
     {
       icon: <ListChecksIcon className="mr-2 h-4 w-4" />,
-      label: "List All Task",
-      path: "/list-all-task",
+      label: 'List All Task',
+      path: '/tasks'
     },
     {
       icon: <UsersIcon className="mr-2 h-4 w-4" />,
