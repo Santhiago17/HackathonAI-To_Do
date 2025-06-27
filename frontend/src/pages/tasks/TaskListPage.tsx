@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { TaskList } from '@/components/tasks/TaskList';
-import { Button } from '@/components/ui/button';
 import { getTasks, deleteTask } from '@/services/taskService';
 import { getUsers, type User } from '@/services/userService';
 import type { Task } from '@/types/Task';
