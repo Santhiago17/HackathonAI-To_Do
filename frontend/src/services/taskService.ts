@@ -1,20 +1,19 @@
 import { api } from './api';
 import type { Task, Status, Priority } from '@/types/Task';
-import type { User } from '@/types/User'; // Importa User do novo local
+import type { User } from '@/types/User';
 import { mockConfig } from './__mocks__/mockConfig';
 import {
   getMockTasks,
   getMockTaskById,
   getMockTasksByAssignee,
-  createMockTask, // Funções de CRUD mockadas
-  updateMockTask, // Funções de CRUD mockadas
-  deleteMockTask as mockDeleteTask // Renomeado para evitar conflito
+  createMockTask,
+  updateMockTask,
+  deleteMockTask as mockDeleteTask
 } from './__mocks__/taskMocks';
 
-// Interface para tarefa com dados de usuário, estendendo a interface Task
 export interface TaskWithUser extends Task {
-  user?: User; // O usuário atribuído completo
-  creatorUser?: User; // O usuário criador completo
+  user?: User;
+  creatorUser?: User;
 }
 
 // --- Funções de Utilidade ---
@@ -65,7 +64,7 @@ const mapPriorityToBackend = (frontendPriority: Priority): string => {
 };
 
 // --- Funções de Mapeamento Interno (JSON da API para Task do Frontend) ---
-// Centraliza a lógica de mapeamento da resposta da API para o tipo Task do frontend
+
 const mapApiResponseToTask = (apiTask: any): Task => {
   return {
     id: apiTask.id.toString(),
@@ -73,12 +72,12 @@ const mapApiResponseToTask = (apiTask: any): Task => {
     description: apiTask.description,
     status: mapStatusFromBackend(apiTask.status),
     priority: mapPriorityFromBackend(apiTask.priority),
-    assignee: apiTask.assignee?.id?.toString() || '', // Certifica que pega o ID do objeto assignee
-    creator: apiTask.creator?.id?.toString() || '',   // Certifica que pega o ID do objeto creator
+    assignee: apiTask.assignee?.id?.toString() || '',
+    creator: apiTask.creator?.id?.toString() || '',
     tags: apiTask.tags || [],
     createdAt: new Date(apiTask.createdAt),
     updatedAt: new Date(apiTask.updatedAt),
-    // endDate: apiTask.endDate, // Inclua se 'endDate' estiver no seu Task.ts e backend
+    endDate: apiTask.endDate,
   };
 };
 
@@ -88,8 +87,6 @@ const mapApiResponseToTask = (apiTask: any): Task => {
 export const getTasks = async (): Promise<Task[]> => {
   if (mockConfig.useMockData) {
     await delay(mockConfig.apiDelay);
-    // Os mocks devem retornar tarefas no formato Task do frontend,
-    // então o mapeamento de status/prioridade já deve ter sido feito nos mocks.
     return getMockTasks();
   }
 
@@ -111,7 +108,6 @@ export const getTaskById = async (id: string): Promise<Task | undefined> => {
   if (mockConfig.useMockData) {
     await delay(mockConfig.apiDelay);
     const mockTask = getMockTaskById(id);
-    // Se o mockTask está no formato de frontend, apenas retorne.
     return mockTask;
   }
 
@@ -127,11 +123,10 @@ export const getTaskById = async (id: string): Promise<Task | undefined> => {
   }
 };
 
-// GET tarefas por atribuído (GET-TASKS-BY-ASSIGNEE)
+// GET tarefas por pessoa responsável (GET-TASKS-BY-ASSIGNEE)
 export const getTasksByAssignee = async (assigneeId: string): Promise<Task[]> => {
   if (mockConfig.useMockData) {
     await delay(mockConfig.apiDelay);
-    // Os mocks devem retornar tarefas no formato Task do frontend
     return getMockTasksByAssignee(assigneeId);
   }
 
@@ -152,7 +147,6 @@ export const getTasksByAssignee = async (assigneeId: string): Promise<Task[]> =>
 export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>): Promise<Task> => {
   if (mockConfig.useMockData) {
     await delay(mockConfig.apiDelay);
-    // createMockTask já adiciona id, createdAt, updatedAt e retorna um Task completo.
     return createMockTask(taskData);
   }
 
@@ -165,7 +159,7 @@ export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'upda
       tags: taskData.tags,
       priority: mapPriorityToBackend(taskData.priority),
       status: mapStatusToBackend(taskData.status),
-      // endDate: taskData.endDate, // Inclua se 'endDate' estiver no seu Task.ts e for enviado
+      endDate: taskData.endDate,
     };
     
     const response = await api.post('/tasks', backendTaskData);
@@ -201,7 +195,7 @@ export const updateTask = async (id: string, taskData: Partial<Task>): Promise<T
     if (taskData.assignee !== undefined) {
       backendTaskData.assignee = taskData.assignee ? { id: parseInt(taskData.assignee) } : null;
     }
-    // if (taskData.endDate !== undefined) backendTaskData.endDate = taskData.endDate; // Inclua se 'endDate' estiver no seu Task.ts e for enviado
+    if (taskData.endDate !== undefined) backendTaskData.endDate = taskData.endDate;
     
     const response = await api.put(`/tasks/${id}`, backendTaskData);
     return mapApiResponseToTask(response.data);
@@ -293,17 +287,14 @@ export const getTasksWithUsers = async (): Promise<TaskWithUser[]> => {
       return [];
     }
 
-    // Mapeia as tarefas da API para o formato Task do frontend
     const tasks: Task[] = tasksResponse.data.map(mapApiResponseToTask);
 
-    // Mapeia os usuários da API para o formato User do frontend
     const users: User[] = usersResponse.data.map((user: any) => ({
         id: user.id.toString(),
-        firstName: user.firstName,   // <<< INCLUÍDO AGORA
-        lastName: user.lastName,     // <<< INCLUÍDO AGORA
+        firstName: user.firstName,
+        lastName: user.lastName,
         name: `${user.firstName} ${user.lastName}`,
         birthDate: user.birthDate,
-        email: user.email || '' // Se houver email no backend e quiser manter no frontend
     }));
     
     return tasks.map(task => {

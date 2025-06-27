@@ -1,7 +1,5 @@
-// src/__mocks__/taskMocks.ts
-
-import type { Task, Status, Priority } from '@/types/Task';
-import type { User } from '../../types/User'; // Ajuste o caminho relativo se necessário (ex: '../../types/User')
+import type { Task } from '@/types/Task';
+import type { User } from '../../types/User';
 
 import { getMockUsers } from './userMocks';
 
@@ -10,7 +8,7 @@ let tasksInMemory: Task[] = [
     id: '1',
     title: 'Analisar Código COBOL Legado',
     description: 'Revisar a estrutura do programa de contabilidade principal (CONTABIL.CBL) para identificar módulos de dívida técnica.',
-    status: 'todo', // Corrigido para um Status válido
+    status: 'todo',
     priority: 'high',
     assignee: '1',
     creator: '1',
@@ -22,7 +20,7 @@ let tasksInMemory: Task[] = [
     id: '2',
     title: 'Migrar Dados para o Novo Sistema Relacional',
     description: 'Extrair dados do VSAM para o SQL Server. Foco na tabela de clientes.',
-    status: 'in-progress', // Corrigido para um Status válido
+    status: 'in-progress',
     priority: 'high',
     assignee: '2',
     creator: '1',
@@ -34,7 +32,7 @@ let tasksInMemory: Task[] = [
     id: '3',
     title: 'Otimizar Rotina de Batch Noturno',
     description: 'Investigar gargalos de performance na rotina de processamento de final de dia e aplicar otimizações.',
-    status: 'todo', // <<< Corrigido AQUI: Mudei para 'todo' ou outro Status válido
+    status: 'todo', 
     priority: 'medium',
     assignee: '3',
     creator: '2',
@@ -46,7 +44,7 @@ let tasksInMemory: Task[] = [
     id: '4',
     title: 'Documentar Procedimentos de Deploy em JCL',
     description: 'Criar documentação detalhada dos scripts JCL para o deploy de novas versões do sistema de folha de pagamento.',
-    status: 'done', // Corrigido para um Status válido
+    status: 'done',
     priority: 'low',
     assignee: '4',
     creator: '3',
@@ -58,7 +56,7 @@ let tasksInMemory: Task[] = [
     id: '5',
     title: 'Treinamento em ZOS para Novos Estagiários',
     description: 'Desenvolver e ministrar módulo de treinamento básico sobre o sistema operacional ZOS para a nova turma de estagiários.',
-    status: 'todo', // Corrigido para um Status válido
+    status: 'todo',
     priority: 'medium',
     assignee: '5',
     creator: '4',
@@ -70,7 +68,7 @@ let tasksInMemory: Task[] = [
     id: '6',
     title: 'Auditar Segurança do CICS',
     description: 'Realizar auditoria de configurações de segurança do ambiente CICS para conformidade com novas políticas da empresa.',
-    status: 'review', // Corrigido para um Status válido
+    status: 'review',
     priority: 'high',
     assignee: '1',
     creator: '5',

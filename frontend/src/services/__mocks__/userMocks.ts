@@ -7,7 +7,6 @@ export const mockUsers: User[] = [
     lastName: 'Silva Oliveira',
     name: 'João Silva Oliveira',
     birthDate: '1990-01-01'
-    // email: 'joao.oliveira@mainframe.com' // Remova se não estiver no tipo User
   },
   {
     id: '2',
@@ -15,7 +14,6 @@ export const mockUsers: User[] = [
     lastName: 'Souza Santos',
     name: 'Maria Souza Santos',
     birthDate: '1985-05-15'
-    // email: 'maria.souza@datacenter.com'
   },
   {
     id: '3',
@@ -23,7 +21,6 @@ export const mockUsers: User[] = [
     lastName: 'Santos Costa',
     name: 'Pedro Santos Costa',
     birthDate: '1992-11-20'
-    // email: 'pedro.costa@legacy.com'
   },
   {
     id: '4',
@@ -31,7 +28,6 @@ export const mockUsers: User[] = [
     lastName: 'Oliveira Ferreira',
     name: 'Ana Oliveira Ferreira',
     birthDate: '1988-07-07'
-    // email: 'ana.ferreira@cobolsystems.com'
   },
   {
     id: '5',
@@ -39,7 +35,6 @@ export const mockUsers: User[] = [
     lastName: 'Mendes Rodrigues',
     name: 'Carlos Mendes Rodrigues',
     birthDate: '1995-03-25'
-    // email: 'carlos.rodrigues@mainframepro.com'
   }
 ]
 
