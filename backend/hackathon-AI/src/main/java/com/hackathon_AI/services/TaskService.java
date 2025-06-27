@@ -1,93 +1,75 @@
 package com.hackathon_AI.services;
 
+import com.hackathon_AI.dto.request.CreateTaskDTO;
+import com.hackathon_AI.dto.request.UpdateTaskStatusDTO;
+import com.hackathon_AI.dto.response.TaskDTO;
+import com.hackathon_AI.dto.request.UpdateTaskDTO;
 import com.hackathon_AI.model.Task;
-import com.hackathon_AI.model.TaskStatus;
 import com.hackathon_AI.model.User;
 import com.hackathon_AI.repositories.TaskRepository;
 import com.hackathon_AI.repositories.UserRepository;
+import com.hackathon_AI.utils.Converter;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TaskService {
-
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
+    private final Converter converter;
 
-    public TaskService(TaskRepository taskRepository, UserRepository userRepository) {
-        this.taskRepository = taskRepository;
-        this.userRepository = userRepository;
+    public TaskDTO createTask(CreateTaskDTO task) {
+        User creator = userRepository.findById(task.getCreatorId())
+                .orElseThrow(() -> new EntityNotFoundException("Creator not found"));
+        User assignee = userRepository.findById(task.getAssigneeId())
+                .orElseThrow(() -> new EntityNotFoundException("Assignee not found"));
+
+        Task newTask = new Task();
+        BeanUtils.copyProperties(task, newTask);
+        newTask.setPriority(task.getPriority().toUpperCase());
+        newTask.setCreator(creator);
+        newTask.setAssignee(assignee);
+        return converter.toTaskResponseDTO(taskRepository.save(newTask));
     }
 
-    public Task createTask(Task task) {
-        validateTaskInput(task);
-
-        User creator = userRepository.findById(task.getCreator().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Creator not found"));
-        User assignee = userRepository.findById(task.getAssignee().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Assignee not found"));
-
-        task.setCreator(creator);
-        task.setAssignee(assignee);
-        task.setCreatedAt(LocalDateTime.now());
-        task.setUpdatedAt(LocalDateTime.now());
-
-        return taskRepository.save(task);
-    }
-
-    public Task updateTask(Integer taskId, Task updatedData) {
+    public TaskDTO updateTask(Integer taskId, UpdateTaskDTO dto) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
-        if (updatedData.getTitle() != null && !updatedData.getTitle().isBlank()) {
-            task.setTitle(updatedData.getTitle());
-        }
+        Optional.ofNullable(dto.getTitle())
+                .filter(title -> !title.isBlank())
+                .ifPresent(task::setTitle);
 
-        if (updatedData.getDescription() != null && !updatedData.getDescription().isBlank()) {
-            task.setDescription(updatedData.getDescription());
-        }
+        Optional.ofNullable(dto.getDescription())
+                .filter(desc -> !desc.isBlank())
+                .ifPresent(task::setDescription);
 
-        if (updatedData.getEndDate() != null) {
-            task.setEndDate(updatedData.getEndDate());
-        }
+        Optional.ofNullable(dto.getEndDate())
+                .ifPresent(task::setEndDate);
 
-        if (updatedData.getTags() != null && !updatedData.getTags().isEmpty()) {
-            task.setTags(updatedData.getTags());
-        }
+        Optional.ofNullable(dto.getTags())
+                .filter(tags -> !tags.isEmpty())
+                .ifPresent(task::setTags);
 
-        if (updatedData.getPriority() != null) {
-            task.setPriority(updatedData.getPriority());
-        }
+        Optional.ofNullable(dto.getPriority())
+                .ifPresent(priority -> task.setPriority(priority.toUpperCase()));
 
-        task.setUpdatedAt(LocalDateTime.now());
-
-        return taskRepository.save(task);
+        return converter.toTaskResponseDTO(taskRepository.save(task));
     }
 
-    public Task updateTaskStatus(Integer taskId, String newStatus) {
+    public TaskDTO updateTaskStatus(Integer taskId, UpdateTaskStatusDTO newStatus) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new EntityNotFoundException("Task not found"));
 
-        try {
-            TaskStatus statusEnum = TaskStatus.valueOf(newStatus.toUpperCase());
-            task.setStatus(statusEnum);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid status value. Allowed values: " +
-                    String.join(", ", getAllStatusValues()));
-        }
+        task.setStatus(newStatus.getStatus());
 
-        task.setUpdatedAt(LocalDateTime.now());
-        return taskRepository.save(task);
-    }
-
-    private List<String> getAllStatusValues() {
-        return List.of(TaskStatus.values()).stream()
-                .map(Enum::name)
-                .toList();
+        return converter.toTaskResponseDTO(taskRepository.save(task));
     }
 
     public void deleteTask(Integer taskId) {
@@ -97,48 +79,15 @@ public class TaskService {
         taskRepository.deleteById(taskId);
     }
 
-    public List<Task> listTasksByUser(Integer userId) {
-        return taskRepository.findByAssigneeId(userId);
+    public List<TaskDTO> listTasksByUser(Integer userId) {
+        return converter.toTaskResponseDTOList(taskRepository.findByAssigneeId(userId));
     }
 
-    public List<Task> searchTasksByTag(String tag) {
-        return taskRepository.findTasksByTagsContaining(tag);
+    public List<TaskDTO> searchTasksByTag(String tag) {
+        return converter.toTaskResponseDTOList(taskRepository.findTasksByTagsContaining(tag));
     }
 
-    public List<Task> listAllTasks() {
-        return taskRepository.findAll();
-    }
-
-    private void validateTaskInput(Task task) {
-        if (task.getTitle() != null && task.getTitle().length() > 100) {
-            throw new IllegalArgumentException("Title too long");
-        }
-
-        if (task.getDescription() != null && task.getDescription().length() > 1000) {
-            throw new IllegalArgumentException("Description too long");
-        }
-
-        if (task.getEndDate() != null && task.getEndDate().isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("End date cannot be in the past");
-        }
-
-        if (task.getTags() != null && String.join(",", task.getTags()).length() > 100) {
-            throw new IllegalArgumentException("Tags too long");
-        }
-
-        if (task.getPriority() != null) {
-            try {
-                int p = Integer.parseInt(task.getPriority());
-                if (p < 1 || p > 3) {
-                    throw new IllegalArgumentException("Invalid priority value");
-                }
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Priority must be numeric (1-3)");
-            }
-        }
-
-        if (task.getAssignee() == null || task.getAssignee().getId() == null) {
-            throw new IllegalArgumentException("Assignee is required");
-        }
+    public List<TaskDTO> listAllTasks() {
+        return converter.toTaskResponseDTOList(taskRepository.findAll());
     }
 }
