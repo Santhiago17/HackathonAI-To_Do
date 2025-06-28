@@ -15,6 +15,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "tasks")
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +38,7 @@ public class Task {
     @Column(name = "tag")
     private List<String> tags = new ArrayList<>();
     private String priority;
+    @Enumerated(EnumType.STRING)
     private TaskStatus status;
     @Column(name = "created_at")
     private LocalDateTime createdAt;
