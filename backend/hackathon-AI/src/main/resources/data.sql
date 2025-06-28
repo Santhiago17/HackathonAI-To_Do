@@ -26,3 +26,27 @@ VALUES
     (8, 3, 'Preparar apresentação para evento', '2025-06-18', '2025-06-15', 'HIGH', 'CANCELLED', 'Slide deck'),
     (9, 2, 'Pesquisar novas tecnologias', '2025-06-25', '2025-06-20', 'LOW', 'COMPLETED', 'Exploração'),
     (10, 1, 'Limpar a casa', DATEADD('DAY', 5, NOW()), NOW(), 'LOW', 'PENDING', 'Organização semanal');
+
+INSERT INTO task_tags
+    (task_id, tag)
+VALUES
+    (1, 'Casa'),
+    (1, 'Casa'),
+    (2, 'Compras'),
+    (2, 'Casa'),
+    (3, 'Revisão'),
+    (3, 'Trabalho'),
+    (4, 'Contas'),
+    (4, 'Casa'),
+    (5, 'Reunião'),
+    (5, 'Cliente Y'),
+    (6, 'Documentação'),
+    (6, 'API'),
+    (7, 'Carro'),
+    (7, 'Manutenção'),
+    (8, 'Apresentação'),
+    (8, 'Evento'),
+    (9, 'Pesquisa'),
+    (9, 'Tecnologia'),
+    (10, 'Limpeza'),
+    (10, 'Casa');
