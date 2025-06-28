@@ -4,88 +4,93 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
-import type { Task } from "@/types/Task";
-import type { User } from "@/types/User";
+  TableRow
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import type { Task } from '@/types/Task'
+import type { User } from '@/types/User'
 
 const getPriorityClass = (priority: string): string => {
   const classes = {
-    'high': 'text-red-600 font-bold',
-    'medium': 'text-amber-600',
-    'low': 'text-green-600',
-  };
-  return classes[priority as keyof typeof classes] || '';
-};
+    high: 'text-red-600 font-bold',
+    medium: 'text-amber-600',
+    low: 'text-green-600'
+  }
+  return classes[priority as keyof typeof classes] || ''
+}
 
 const getStatusClass = (status: string): string => {
   const classes = {
-    'todo': 'bg-gray-200 text-gray-800',
+    todo: 'bg-gray-200 text-gray-800',
     'in-progress': 'bg-blue-200 text-blue-800',
-    'review': 'bg-amber-200 text-amber-800',
-    'done': 'bg-green-200 text-green-800',
-  };
-  return classes[status as keyof typeof classes] || '';
-};
-
-interface TaskListProps {
-  tasks: Task[];
-  users: User[];
-  isLoading: boolean;
-  error: Error | null;
-  onDelete?: (taskId: string) => void;
-  onEdit?: (task: Task) => void;
+    review: 'bg-amber-200 text-amber-800',
+    done: 'bg-green-200 text-green-800'
+  }
+  return classes[status as keyof typeof classes] || ''
 }
 
-export function TaskList({ tasks, users, isLoading, error, onDelete }: TaskListProps) {
+interface TaskListProps {
+  tasks: Task[]
+  users: User[]
+  isLoading: boolean
+  error: Error | null
+  onDelete?: (taskId: string) => void
+  onEdit?: (task: Task) => void
+}
+
+export function TaskList({
+  tasks,
+  users,
+  isLoading,
+  error,
+  onDelete,
+  onEdit
+}: TaskListProps) {
   if (isLoading) {
-    return <p>Carregando tarefas...</p>;
+    return <p>Carregando tarefas...</p>
   }
 
   if (error) {
-    return <p>Erro ao carregar tarefas: {error.message || JSON.stringify(error)}</p>;
+    return (
+      <p>Erro ao carregar tarefas: {error.message || JSON.stringify(error)}</p>
+    )
   }
 
   if (!tasks || tasks.length === 0) {
-    return <p>Nenhuma tarefa encontrada.</p>;
+    return <p>Nenhuma tarefa encontrada.</p>
   }
 
   const getUserName = (userId: string): string => {
-    const user = users.find(u => u.id === userId);
-    return user ? user.name : 'Usuário desconhecido';
-  };
+    const user = users.find(u => u.id === userId)
+    return user ? user.name : 'Usuário desconhecido'
+  }
 
-  // Definindo a ordem de precedência para Status e Prioridade
   const statusOrder: Record<string, number> = {
-    'todo': 1,
+    todo: 1,
     'in-progress': 2,
-    'review': 3,
-    'done': 4,
-  };
+    review: 3,
+    done: 4
+  }
 
   const priorityOrder: Record<string, number> = {
-    'high': 1,
-    'medium': 2,
-    'low': 3,
-  };
+    high: 1,
+    medium: 2,
+    low: 3
+  }
 
   const sortedTasks = [...tasks].sort((a, b) => {
-    // 1. Comparar por Status
-    const statusA = statusOrder[a.status];
-    const statusB = statusOrder[b.status];
+    const statusA = statusOrder[a.status]
+    const statusB = statusOrder[b.status]
 
     if (statusA !== statusB) {
-      return statusA - statusB;
+      return statusA - statusB
     }
 
-    // 2. Se o Status for igual, comparar por Prioridade
-    const priorityA = priorityOrder[a.priority];
-    const priorityB = priorityOrder[b.priority];
+    const priorityA = priorityOrder[a.priority]
+    const priorityB = priorityOrder[b.priority]
 
-    return priorityA - priorityB;
-  });
+    return priorityA - priorityB
+  })
 
   return (
     <Table>
@@ -102,11 +107,10 @@ export function TaskList({ tasks, users, isLoading, error, onDelete }: TaskListP
         </TableRow>
       </TableHeader>
       <TableBody>
-        {sortedTasks.map((task) => (
+        {sortedTasks.map(task => (
           <TableRow key={task.id}>
             <TableCell className="font-medium">{task.id}</TableCell>
 
-            {/* Célula do Título: Removendo 'whitespace-nowrap' aqui */}
             <TableCell className="max-w-[300px]">
               <div
                 className="overflow-hidden text-ellipsis whitespace-nowrap"
@@ -123,27 +127,42 @@ export function TaskList({ tasks, users, isLoading, error, onDelete }: TaskListP
               {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
             </TableCell>
             <TableCell>
-              <span className={`px-2 py-1 rounded text-xs ${getStatusClass(task.status)}`}>
+              <span
+                className={`px-2 py-1 rounded text-xs ${getStatusClass(
+                  task.status
+                )}`}
+              >
                 {task.status.replace('-', ' ').toUpperCase()}
               </span>
             </TableCell>
 
-            {/* Célula das Tags: Removendo 'whitespace-nowrap' aqui */}
             <TableCell className="max-w-[200px]">
               <div
                 className="overflow-hidden text-ellipsis whitespace-nowrap"
-                title={task.tags && task.tags.length > 0 ? task.tags.join(', ') : '-'}
+                title={
+                  task.tags && task.tags.length > 0 ? task.tags.join(', ') : '-'
+                }
               >
                 {task.tags && task.tags.length > 0 ? task.tags.join(', ') : '-'}
               </div>
             </TableCell>
 
             <TableCell className="text-right space-x-2">
-              <Button asChild variant="outline" size="sm">
-                <Link to={`/tasks/${task.id}/edit`}>Editar</Link>
-              </Button>
+              {onEdit && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onEdit(task)}
+                >
+                  Editar
+                </Button>
+              )}
               {onDelete && (
-                <Button variant="destructive" size="sm" onClick={() => onDelete(task.id)}>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onDelete(task.id)}
+                >
                   Excluir
                 </Button>
               )}
@@ -152,5 +171,5 @@ export function TaskList({ tasks, users, isLoading, error, onDelete }: TaskListP
         ))}
       </TableBody>
     </Table>
-  );
+  )
 }
