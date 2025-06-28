@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { TaskList } from '@/components/tasks/TaskList'
+import { EditTaskModal } from '@/components/tasks/EditTaskModal'
 import { getTasks, deleteTask } from '@/services/taskService'
 import { getUsers } from '@/services/userService'
 import type { Task } from '@/types/Task'
@@ -10,6 +11,8 @@ export function TaskListPage() {
   const [users, setUsers] = useState<User[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<Error | null>(null)
+  const [editingTask, setEditingTask] = useState<Task | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   const fetchData = async () => {
     setIsLoading(true)
@@ -43,6 +46,20 @@ export function TaskListPage() {
     }
   }
 
+  const handleEditTask = (task: Task) => {
+    setEditingTask(task)
+    setIsEditModalOpen(true)
+  }
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false)
+    setEditingTask(null)
+  }
+
+  const handleTaskUpdated = () => {
+    fetchData()
+  }
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex justify-between items-center mb-6">
@@ -55,6 +72,15 @@ export function TaskListPage() {
         isLoading={isLoading}
         error={error}
         onDelete={handleDeleteTask}
+        onEdit={handleEditTask}
+      />
+
+      <EditTaskModal
+        task={editingTask}
+        users={users}
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        onTaskUpdated={handleTaskUpdated}
       />
     </div>
   )

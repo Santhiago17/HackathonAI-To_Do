@@ -222,7 +222,13 @@ export function TaskForm({
         disabled={isLoading}
         className="w-full bg-orange-500 hover:bg-orange-600 text-white"
       >
-        {isLoading ? 'Criando...' : 'Criar Tarefa'}
+        {isLoading
+          ? initialData
+            ? 'Salvando...'
+            : 'Criando...'
+          : initialData
+          ? 'Salvar Alterações'
+          : 'Criar Tarefa'}
       </Button>
     </form>
   )
