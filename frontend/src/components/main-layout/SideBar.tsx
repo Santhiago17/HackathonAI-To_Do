@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { PlusCircleIcon } from "lucide-react"
-import { UserProfile, type UserProfileProps } from "./UserProfile"
 import { NavButtons, type NavButtonsProps } from "./NavButtons"
+import { UserCard, type UserCardProps } from "../users/UserCard"
 
-export type SideBarProps = UserProfileProps &
+export type SideBarProps = UserCardProps &
   NavButtonsProps & {
     footerButton: {
       buttonText: string
@@ -12,7 +12,7 @@ export type SideBarProps = UserProfileProps &
   }
 
 export function SideBar({
-  userName,
+  user,
   navItems,
   onNavigate,
   footerButton,
@@ -20,7 +20,7 @@ export function SideBar({
   return (
     <>
       <aside className="w-[200px] bg-[#1e1b18] border-r border-[#333] p-4 flex flex-col h-screen">
-        <UserProfile userName={userName} />
+        <UserCard user={user} />
         <NavButtons navItems={navItems} onNavigate={onNavigate} />
         <Button
           className="mt-4 bg-orange-500 hover:bg-orange-600 text-white w-full flex items-center justify-center"
