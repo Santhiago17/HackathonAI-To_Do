@@ -1,20 +1,22 @@
-import App from "@/App";
-import { Route, Routes } from "react-router-dom";
-import { HomePage } from "@/pages/HomePage"; // Import HomePage
-import { UsersPage } from "@/pages/users/UsersPage";
-import { UserCreatePage } from "@/pages/users/UserCreatePage";
-import { UserEditPage } from "@/pages/users/UserEditPage";
+import { Route, Routes } from 'react-router-dom'
+import { HomePage } from '@/pages/HomePage'
+import { UsersPage } from '@/pages/users/UsersPage'
+import { UserCreatePage } from '@/pages/users/UserCreatePage'
+import { TaskListPage } from '@/pages/tasks/TaskListPage'
+import { TaskCreatePage } from '@/pages/tasks/TaskCreatePage'
+import { MainLayout } from '@/layout/MainLayout'
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<App />}> {/* App.tsx is now the layout for child routes */}
-        <Route index element={<HomePage />} /> {/* Default component for "/" */}
+      <Route path="/" element={<MainLayout />}>
+        <Route index element={<HomePage />} />
         <Route path="users" element={<UsersPage />} />
         <Route path="users/new" element={<UserCreatePage />} />
-        <Route path="users/:id/edit" element={<UserEditPage />} />
-        {/* Add other application routes as children of App or at the same level if they don't use App's layout */}
+        <Route path="tasks" element={<TaskListPage />} />
+        <Route path="tasks/new" element={<TaskCreatePage />} />
+        <Route path="*" />
       </Route>
     </Routes>
-  );
+  )
 }

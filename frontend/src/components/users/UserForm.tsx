@@ -1,96 +1,136 @@
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button'; // Assuming shadcn/ui components are installed
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
-} from '@/components/ui/form'; // Assuming shadcn/ui components are installed
-import { Input } from '@/components/ui/input'; // Assuming shadcn/ui components are installed
-import { createUserSchema, updateUserSchema, type CreateUserType, type UpdateUserType } from '@/lib/schemas/userSchemas';
-import type { User } from '@/services/userService';
+  FormMessage
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import {
+  createUserSchema,
+  type CreateUserType
+} from '@/lib/schemas/userSchemas'
+import type { User } from '@/types/User'
+import {
+  formatDateToAmerican,
+  formatDateToISO,
+  applyDateMask
+} from '@/lib/utils/dateUtils'
 
 interface UserFormProps {
-  onSubmit: (data: CreateUserType | UpdateUserType) => Promise<void>;
-  initialData?: User;
-  isEditMode?: boolean;
-  isLoading?: boolean;
+  onSubmit: (data: CreateUserType) => Promise<void>
+  initialData?: User
+  isLoading?: boolean
 }
 
-export function UserForm({ onSubmit, initialData, isEditMode = false, isLoading = false }: UserFormProps) {
-  const schema = isEditMode ? updateUserSchema : createUserSchema;
-  type FormDataType = z.infer<typeof schema>;
+export function UserForm({
+  onSubmit,
+  initialData,
+  isLoading = false
+}: UserFormProps) {
+  const schema = createUserSchema
+  type FormDataType = z.infer<typeof schema>
 
   const form = useForm<FormDataType>({
     resolver: zodResolver(schema),
-    defaultValues: isEditMode && initialData 
-      ? { 
-          name: initialData.name, 
-          email: initialData.email 
-        } 
+    defaultValues: initialData
+      ? {
+          firstName: initialData.firstName,
+          lastName: initialData.lastName,
+          birthDate: formatDateToAmerican(initialData.birthDate)
+        }
       : {
-          name: '',
-          email: '',
-          ...( !isEditMode && { password: '' }), // Add password only for create mode
-        },
-  });
+          firstName: '',
+          lastName: '',
+          birthDate: ''
+        }
+  })
 
   const handleFormSubmit = async (data: FormDataType) => {
-    await onSubmit(data);
-  };
+    const dataToSend = {
+      ...data,
+      birthDate: formatDateToISO(data.birthDate)
+    }
+    await onSubmit(dataToSend)
+  }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(handleFormSubmit)}
+        className="space-y-6"
+      >
         <FormField
           control={form.control}
-          name="name"
+          name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome</FormLabel>
+              <FormLabel className="text-gray-300">Nome</FormLabel>
               <FormControl>
-                <Input placeholder="Nome completo" {...field} />
+                <Input
+                  placeholder="Primeiro nome"
+                  {...field}
+                  className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-400 focus:border-orange-500 focus:ring-orange-500/20"
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-400" />
             </FormItem>
           )}
         />
         <FormField
           control={form.control}
-          name="email"
+          name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel className="text-gray-300">Sobrenome</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="seu@email.com" {...field} />
+                <Input
+                  placeholder="Último nome"
+                  {...field}
+                  className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-400 focus:border-orange-500 focus:ring-orange-500/20"
+                />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-400" />
             </FormItem>
           )}
         />
-        {!isEditMode && (
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Senha</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="******" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? (isEditMode ? 'Salvando...' : 'Criando...') : (isEditMode ? 'Salvar Alterações' : 'Criar Usuário')}
+        <FormField
+          control={form.control}
+          name="birthDate"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-300">
+                Data de Nascimento
+              </FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="MM/DD/YYYY (ex: 01/15/1990)"
+                  {...field}
+                  onChange={e => {
+                    const maskedValue = applyDateMask(e.target.value)
+                    field.onChange(maskedValue)
+                  }}
+                  maxLength={10}
+                  className="bg-[#1a1a1a] border-gray-600 text-white placeholder:text-gray-400 focus:border-orange-500 focus:ring-orange-500/20"
+                />
+              </FormControl>
+              <FormMessage className="text-red-400" />
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2.5 transition-colors duration-200"
+        >
+          {isLoading ? 'Criando...' : 'Criar Usuário'}
         </Button>
       </form>
     </Form>
-  );
+  )
 }

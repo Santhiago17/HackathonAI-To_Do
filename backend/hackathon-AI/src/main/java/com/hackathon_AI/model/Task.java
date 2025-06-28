@@ -23,12 +23,15 @@ public class Task {
     private String description;
     @Column(name = "end_date")
     private LocalDate endDate;
+    
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
+    
     @ManyToOne
     @JoinColumn(name = "assignee_id")
     private User assignee;
+
     @ElementCollection
     @CollectionTable(name = "task_tags", joinColumns = @JoinColumn(name = "task_id"))
     @Column(name = "tag")

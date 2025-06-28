@@ -1,42 +1,50 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { UserForm } from '@/components/users/UserForm';
-import { createUser } from '@/services/userService'; // Removed unused 'User' type import
-import type { CreateUserType } from '@/lib/schemas/userSchemas';
-// import { useToast } from "@/components/ui/use-toast"; // If using shadcn/ui toast
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { UserForm } from '@/components/users/UserForm'
+import { createUser } from '@/services/userService'
+import type { CreateUserType } from '@/lib/schemas/userSchemas'
+import { Card, CardContent } from '@/components/ui/card'
 
 export function UserCreatePage() {
-  const navigate = useNavigate();
-  // const { toast } = useToast(); // If using shadcn/ui toast
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<Error | null>(null)
 
   const handleSubmit = async (data: CreateUserType) => {
-    setIsLoading(true);
-    setError(null);
+    setIsLoading(true)
+    setError(null)
     try {
-      await createUser(data);
-      // toast({ title: "Sucesso", description: "Usuário criado com sucesso!" });
-      console.log("Usuário criado com sucesso!"); // Placeholder for toast
-      navigate('/users');
+      await createUser(data)
+      console.log('Usuário criado com sucesso!')
+      navigate('/users')
     } catch (err) {
-      setError(err as Error);
-      // toast({ title: "Erro", description: "Falha ao criar usuário.", variant: "destructive" });
-      console.error("Failed to create user:", err); // Placeholder for toast
+      setError(err as Error)
+      console.error('Failed to create user:', err)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6">Criar Novo Usuário</h1>
-      {error && <p className="text-red-500 mb-4">Erro: {error.message}</p>}
-      <UserForm 
-        onSubmit={handleSubmit as (data: CreateUserType | import('@/lib/schemas/userSchemas').UpdateUserType) => Promise<void>} 
-        isEditMode={false} 
-        isLoading={isLoading} 
-      />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-6 ">
+        <Card className="bg-[#252525] border-none text-white max-w-md mx-auto w-[600px]">
+          <div className="p-4">
+            <h2 className="text-sm font-medium">Create User</h2>
+          </div>
+          <CardContent className="pt-0">
+            {error && (
+              <div className="mb-4 p-3 rounded-md bg-red-900/20 border border-red-500/30">
+                <p className="text-red-400 text-sm">Erro: {error.message}</p>
+              </div>
+            )}
+            <UserForm
+              onSubmit={handleSubmit as (data: CreateUserType) => Promise<void>}
+              isLoading={isLoading}
+            />
+          </CardContent>
+        </Card>
+      </div>
     </div>
-  );
+  )
 }
