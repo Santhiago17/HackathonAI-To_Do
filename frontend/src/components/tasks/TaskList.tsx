@@ -36,6 +36,7 @@ interface TaskListProps {
   isLoading: boolean;
   error: Error | null;
   onDelete?: (taskId: string) => void;
+  onEdit?: (task: Task) => void;
 }
 
 export function TaskList({ tasks, users, isLoading, error, onDelete }: TaskListProps) {
@@ -56,10 +57,34 @@ export function TaskList({ tasks, users, isLoading, error, onDelete }: TaskListP
     return user ? user.name : 'Usuário desconhecido';
   };
 
+  // Definindo a ordem de precedência para Status e Prioridade
+  const statusOrder: Record<string, number> = {
+    'todo': 1,
+    'in-progress': 2,
+    'review': 3,
+    'done': 4,
+  };
+
+  const priorityOrder: Record<string, number> = {
+    'high': 1,
+    'medium': 2,
+    'low': 3,
+  };
+
   const sortedTasks = [...tasks].sort((a, b) => {
-    const userNameA = getUserName(a.assignee).toLowerCase();
-    const userNameB = getUserName(b.assignee).toLowerCase();
-    return userNameA.localeCompare(userNameB);
+    // 1. Comparar por Status
+    const statusA = statusOrder[a.status];
+    const statusB = statusOrder[b.status];
+
+    if (statusA !== statusB) {
+      return statusA - statusB;
+    }
+
+    // 2. Se o Status for igual, comparar por Prioridade
+    const priorityA = priorityOrder[a.priority];
+    const priorityB = priorityOrder[b.priority];
+
+    return priorityA - priorityB;
   });
 
   return (
@@ -67,8 +92,9 @@ export function TaskList({ tasks, users, isLoading, error, onDelete }: TaskListP
       <TableHeader>
         <TableRow>
           <TableHead>ID</TableHead>
-          <TableHead>Título</TableHead>
+          <TableHead className="w-[300px]">Título</TableHead>
           <TableHead>Responsável</TableHead>
+          <TableHead>Criador</TableHead>
           <TableHead>Prioridade</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Tags</TableHead>
@@ -79,8 +105,20 @@ export function TaskList({ tasks, users, isLoading, error, onDelete }: TaskListP
         {sortedTasks.map((task) => (
           <TableRow key={task.id}>
             <TableCell className="font-medium">{task.id}</TableCell>
-            <TableCell>{task.title}</TableCell>
+
+            {/* Célula do Título: Removendo 'whitespace-nowrap' aqui */}
+            <TableCell className="max-w-[300px]">
+              <div
+                className="overflow-hidden text-ellipsis whitespace-nowrap"
+                style={{ maxWidth: '100%' }}
+                title={task.title}
+              >
+                {task.title}
+              </div>
+            </TableCell>
+
             <TableCell>{getUserName(task.assignee)}</TableCell>
+            <TableCell>{getUserName(task.creator)}</TableCell>
             <TableCell className={getPriorityClass(task.priority)}>
               {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}
             </TableCell>
@@ -89,9 +127,17 @@ export function TaskList({ tasks, users, isLoading, error, onDelete }: TaskListP
                 {task.status.replace('-', ' ').toUpperCase()}
               </span>
             </TableCell>
-            <TableCell>
-              {task.tags && task.tags.length > 0 ? task.tags.join(', ') : '-'}
+
+            {/* Célula das Tags: Removendo 'whitespace-nowrap' aqui */}
+            <TableCell className="max-w-[200px]">
+              <div
+                className="overflow-hidden text-ellipsis whitespace-nowrap"
+                title={task.tags && task.tags.length > 0 ? task.tags.join(', ') : '-'}
+              >
+                {task.tags && task.tags.length > 0 ? task.tags.join(', ') : '-'}
+              </div>
             </TableCell>
+
             <TableCell className="text-right space-x-2">
               <Button asChild variant="outline" size="sm">
                 <Link to={`/tasks/${task.id}/edit`}>Editar</Link>
