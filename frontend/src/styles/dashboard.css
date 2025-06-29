@@ -68,8 +68,8 @@
 
 /* Estados de hover melhorados */
 .hover-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
 }
 
 /* Gradientes sutis para os cards */
