@@ -4,6 +4,7 @@ import { SideBar } from "@/components/main-layout/SideBar"
 import { HomeIcon, ListChecksIcon, UsersIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { Outlet, useNavigate } from "react-router-dom"
+import CompassLogo from "../assets/compass-logo.png"
 
 export function MainLayout() {
   const [value, setValue] = useState<string>("")
@@ -27,7 +28,11 @@ export function MainLayout() {
       setPageName(footerButton.buttonText)
     },
   }
-  const userName = "Compass Uol"
+  const user = {
+    name: "Compass Uol",
+    description: "To Do List",
+    image: CompassLogo,
+  }
   const navItems: NavItem[] = [
     {
       icon: <HomeIcon className="mr-2 h-4 w-4" />,
@@ -58,7 +63,7 @@ export function MainLayout() {
   return (
     <div className="relative flex w-full">
       <SideBar
-        userName={userName}
+        user={user}
         navItems={navItems}
         footerButton={footerButton}
         onNavigate={handleNavigate}

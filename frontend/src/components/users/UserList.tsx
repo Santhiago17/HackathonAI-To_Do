@@ -1,5 +1,6 @@
-import type { User } from '@/types/User'
-import { UserCard } from './UserCard.tsx'
+import type { User } from "@/types/User"
+import { UserCard } from "./UserCard.tsx"
+import { formatDateToBrazilian } from "@/lib/utils/dateUtils.ts"
 
 interface UserListProps {
   users: User[]
@@ -26,8 +27,16 @@ export function UserList({ users, isLoading, error }: UserListProps) {
 
   return (
     <div className="space-y-3">
-      {users.map(user => (
-        <UserCard key={user.id} user={user} />
+      {users.map((user) => (
+        <UserCard
+          key={user.id}
+          user={{
+            name: user.name,
+            description: (
+              <> Nascimento: {formatDateToBrazilian(user.birthDate)}</>
+            ),
+          }}
+        />
       ))}
     </div>
   )
