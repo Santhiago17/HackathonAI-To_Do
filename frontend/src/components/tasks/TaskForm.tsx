@@ -24,6 +24,12 @@ export function TaskForm({
   initialData,
   isLoading = false
 }: TaskFormProps) {
+  // Função para obter data atual em formato YYYY-MM-DD
+  const getTodayDate = () => {
+    const today = new Date()
+    return today.toISOString().split('T')[0]
+  }
+
   const [formData, setFormData] = useState<CreateTaskType>({
     title: initialData?.title || '',
     description: initialData?.description || '',
@@ -32,7 +38,7 @@ export function TaskForm({
     priority: initialData?.priority || 'medium',
     status: initialData?.status || 'todo',
     tags: initialData?.tags || [],
-    endDate: initialData?.endDate || ''
+    endDate: initialData?.endDate || getTodayDate()
   })
 
   const [tagsInput, setTagsInput] = useState(
@@ -207,7 +213,7 @@ export function TaskForm({
 
       <div>
         <label className="block text-sm font-medium text-white mb-2">
-          Data de Entrega (opcional)
+          Data de Entrega *
         </label>
         <Input
           type="date"
@@ -215,6 +221,9 @@ export function TaskForm({
           value={formData.endDate}
           onChange={e => handleInputChange('endDate', e.target.value)}
         />
+        {errors.endDate && (
+          <p className="text-red-400 text-sm mt-1">{errors.endDate}</p>
+        )}
       </div>
 
       <Button
