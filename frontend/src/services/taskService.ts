@@ -43,24 +43,24 @@ const mapStatusToBackend = (frontendStatus: Status): string => {
   return statusMap[frontendStatus] || 'PENDING';
 };
 
-// Converte prioridade do backend (String numérica: "1") para frontend (Priority: 'low')
+// Converte prioridade do backend (String: "HIGH") para frontend (Priority: 'high')
 const mapPriorityFromBackend = (backendPriority: string): Priority => {
   const priorityMap: Record<string, Priority> = {
-    '1': 'low',
-    '2': 'medium',
-    '3': 'high'
+    'LOW': 'low',
+    'MEDIUM': 'medium',
+    'HIGH': 'high'
   };
   return priorityMap[backendPriority] || 'low';
 };
 
-// Converte prioridade do frontend (Priority: 'low') para backend (String numérica: "1")
+// Converte prioridade do frontend (Priority: 'low') para backend (String: "LOW")
 const mapPriorityToBackend = (frontendPriority: Priority): string => {
   const priorityMap: Record<Priority, string> = {
-    'low': '1',
-    'medium': '2',
-    'high': '3'
+    'low': 'LOW',
+    'medium': 'MEDIUM',
+    'high': 'HIGH'
   };
-  return priorityMap[frontendPriority] || '1';
+  return priorityMap[frontendPriority] || 'LOW';
 };
 
 // --- Funções de Mapeamento Interno (JSON da API para Task do Frontend) ---
@@ -151,12 +151,21 @@ export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'upda
   }
 
   try {
+    // Validações básicas
+    if (!taskData.creator || !taskData.assignee) {
+      throw new Error('Creator e Assignee são obrigatórios');
+    }
+    
+    if (!taskData.endDate) {
+      throw new Error('Data de término é obrigatória');
+    }
+
     const backendTaskData = {
       title: taskData.title,
       description: taskData.description,
-      creator: { id: parseInt(taskData.creator || '') },
-      assignee: { id: parseInt(taskData.assignee || '') },
-      tags: taskData.tags,
+      creatorId: parseInt(taskData.creator),
+      assigneeId: parseInt(taskData.assignee),
+      tags: taskData.tags || [],
       priority: mapPriorityToBackend(taskData.priority),
       status: mapStatusToBackend(taskData.status),
       endDate: taskData.endDate,
