@@ -27,6 +27,7 @@ public class CreateUserDTO {
     @Pattern(regexp = "^[\\p{L} .'-]+$", message = "Last name must contain only letters")
     private String lastName;
 
+    @Schema(description = "Birth date of the user", example = "1990-01-01", type = "string")
     @NotNull(message = "Birth date is required")
     @Past(message = "Birth date must be in the past")
     @MinimumAge
