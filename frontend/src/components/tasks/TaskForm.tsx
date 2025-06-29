@@ -24,11 +24,10 @@ export function TaskForm({
   initialData,
   isLoading = false
 }: TaskFormProps) {
-  // Função para obter data de amanhã em formato YYYY-MM-DD
-  const getTomorrowDate = () => {
-    const tomorrow = new Date()
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    return tomorrow.toISOString().split('T')[0]
+  // Função para obter data atual em formato YYYY-MM-DD
+  const getTodayDate = () => {
+    const today = new Date()
+    return today.toISOString().split('T')[0]
   }
 
   const [formData, setFormData] = useState<CreateTaskType>({
@@ -39,7 +38,7 @@ export function TaskForm({
     priority: initialData?.priority || 'medium',
     status: initialData?.status || 'todo',
     tags: initialData?.tags || [],
-    endDate: initialData?.endDate || getTomorrowDate()
+    endDate: initialData?.endDate || getTodayDate()
   })
 
   const [tagsInput, setTagsInput] = useState(

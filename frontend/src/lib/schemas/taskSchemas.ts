@@ -29,10 +29,10 @@ export const createTaskSchema = z.object({
     .refine(
       date => {
         const parsedDate = new Date(date)
-        return !isNaN(parsedDate.getTime()) && parsedDate >= new Date()
+        return !isNaN(parsedDate.getTime())
       },
       {
-        message: 'Data de término deve ser uma data válida no futuro'
+        message: 'Data de término deve ser uma data válida'
       }
     )
 })

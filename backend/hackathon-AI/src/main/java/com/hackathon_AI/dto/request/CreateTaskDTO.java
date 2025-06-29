@@ -8,7 +8,6 @@ import com.hackathon_AI.model.TaskStatus;
 import com.hackathon_AI.validation.constraints.ValidPriority;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -34,7 +33,6 @@ public class CreateTaskDTO {
 
     @Schema(description = "End date of the task", example = "2025-06-29", type = "LocalDate")
     @NotNull(message = "End date is required")
-    @FutureOrPresent(message = "End date cannot be in the past")
     private LocalDate endDate;
 
     @Schema(description = "ID of the creator of the task", example = "1", type = "integer")
