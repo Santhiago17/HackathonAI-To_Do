@@ -51,7 +51,6 @@ import {
 } from "@dnd-kit/sortable"
 import { DraggableTaskCard, DroppableColumn } from "@/components/kanban"
 import { useKanbanHelpers } from "@/hooks/useKanbanHelpers"
-import "@/styles/dashboard.css"
 import CompassLogo from "../assets/compass-logo.png"
 import {
   Select,
