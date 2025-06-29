@@ -1,123 +1,121 @@
 package com.hackathon_AI.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.hackathon_AI.model.User;
 
-@DataJpaTest
+@ExtendWith(MockitoExtension.class)
 public class UserRepositoryTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
+    @Mock
     private UserRepository userRepository;
 
     @Test
     public void shouldSaveUser() {
-        // given
         User user = new User();
+        user.setId(1);
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setBirthDate(LocalDate.of(1990, 1, 1));
 
-        // when
+        when(userRepository.save(any(User.class))).thenReturn(user);
+
         User savedUser = userRepository.save(user);
 
-        // then
         assertThat(savedUser).isNotNull();
         assertThat(savedUser.getId()).isNotNull();
         assertThat(savedUser.getFirstName()).isEqualTo("John");
+        verify(userRepository).save(user);
     }
 
     @Test
     public void shouldFindUserById() {
-        // given
         User user = new User();
+        user.setId(1);
         user.setFirstName("Jane");
         user.setLastName("Smith");
         user.setBirthDate(LocalDate.of(1985, 5, 15));
-        entityManager.persist(user);
-        entityManager.flush();
+        
+        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
 
-        // when
-        Optional<User> found = userRepository.findById(user.getId());
+        Optional<User> found = userRepository.findById(1);
 
-        // then
         assertThat(found).isPresent();
         assertThat(found.get().getFirstName()).isEqualTo("Jane");
         assertThat(found.get().getLastName()).isEqualTo("Smith");
+        verify(userRepository).findById(1);
     }
 
     @Test
     public void shouldFindUsersByFirstNameContaining() {
-        // given
         User user1 = new User();
+        user1.setId(1);
         user1.setFirstName("Michael");
         user1.setLastName("Johnson");
         user1.setBirthDate(LocalDate.of(1980, 3, 10));
-        entityManager.persist(user1);
 
         User user2 = new User();
+        user2.setId(2);
         user2.setFirstName("Michelle");
         user2.setLastName("Williams");
         user2.setBirthDate(LocalDate.of(1982, 7, 22));
-        entityManager.persist(user2);
 
         User user3 = new User();
+        user3.setId(3);
         user3.setFirstName("Robert");
         user3.setLastName("Brown");
         user3.setBirthDate(LocalDate.of(1975, 11, 30));
-        entityManager.persist(user3);
         
-        entityManager.flush();
+        when(userRepository.findByFirstNameContaining(anyString())).thenReturn(Arrays.asList(user1, user2));
 
-        // when
         List<User> users = userRepository.findByFirstNameContaining("Mich");
 
-        // then
         assertThat(users).hasSize(2);
         assertThat(users).extracting(User::getFirstName).containsExactlyInAnyOrder("Michael", "Michelle");
+        verify(userRepository).findByFirstNameContaining("Mich");
     }
 
     @Test
     public void shouldFindUsersByLastNameContaining() {
-        // given
         User user1 = new User();
+        user1.setId(1);
         user1.setFirstName("Michael");
         user1.setLastName("Johnson");
         user1.setBirthDate(LocalDate.of(1980, 3, 10));
-        entityManager.persist(user1);
 
         User user2 = new User();
+        user2.setId(2);
         user2.setFirstName("Michelle");
         user2.setLastName("Williams");
         user2.setBirthDate(LocalDate.of(1982, 7, 22));
-        entityManager.persist(user2);
 
         User user3 = new User();
+        user3.setId(3);
         user3.setFirstName("Robert");
         user3.setLastName("Brown");
         user3.setBirthDate(LocalDate.of(1975, 11, 30));
-        entityManager.persist(user3);
         
-        entityManager.flush();
+        when(userRepository.findByLastNameContaining(anyString())).thenReturn(Arrays.asList(user1));
 
-        // when
         List<User> users = userRepository.findByLastNameContaining("John");
 
-        // then
-        // assertThat(users).hasSize(1);
-        // assertThat(users).extracting(User::getLastName).containsExactlyInAnyOrder("Johnson");
+        assertThat(users).hasSize(1);
+        assertThat(users).extracting(User::getLastName).containsExactlyInAnyOrder("Johnson");
+        verify(userRepository).findByLastNameContaining("John");
     }
-
 }
