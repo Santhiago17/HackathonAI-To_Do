@@ -242,7 +242,7 @@ export const updateTaskStatus = async (id: string, status: Status): Promise<Task
 
   try {
     const backendStatus = mapStatusToBackend(status);
-    const response = await api.patch(`/tasks/${id}/status`, { status: backendStatus });
+    const response = await api.put(`/tasks/${id}/status`, { status: backendStatus });
     return mapApiResponseToTask(response.data);
   } catch (error) {
     console.error(`Erro ao atualizar status da tarefa ${id}:`, error);

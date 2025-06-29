@@ -35,6 +35,30 @@
   background: transparent;
 }
 
+/* Scroll personalizado para colunas do kanban */
+.kanban-column-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #4B5563 #1F2937;
+}
+
+.kanban-column-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.kanban-column-scroll::-webkit-scrollbar-track {
+  background: #1F2937;
+  border-radius: 3px;
+}
+
+.kanban-column-scroll::-webkit-scrollbar-thumb {
+  background: #4B5563;
+  border-radius: 3px;
+}
+
+.kanban-column-scroll::-webkit-scrollbar-thumb:hover {
+  background: #6B7280;
+}
+
 /* Animações suaves */
 .transition-all {
   transition-property: all;
