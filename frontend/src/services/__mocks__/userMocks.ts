@@ -1,4 +1,5 @@
 import type { User } from '../../types/User'
+import type { CreateUserType } from '../../lib/schemas/userSchemas'
 
 export const mockUsers: User[] = [
   {
@@ -44,4 +45,17 @@ export const getMockUsers = (): User[] => {
 
 export const getMockUserById = (id: string): User | undefined => {
   return mockUsers.find(user => user.id === id)
+}
+
+export const createMockUser = (userData: CreateUserType): User => {
+  const newUser: User = {
+    id: (mockUsers.length + 1).toString(),
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    name: `${userData.firstName} ${userData.lastName}`.trim(),
+    birthDate: userData.birthDate
+  }
+
+  mockUsers.push(newUser)
+  return newUser
 }
