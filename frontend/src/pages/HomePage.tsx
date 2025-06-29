@@ -14,11 +14,8 @@ import {
 } from '@/components/ui/dialog'
 import {
   Calendar,
-  User as UserIcon,
-  Tag,
   CheckCircle,
   AlertCircle,
-  Circle,
   PlayCircle,
   Plus,
   Users
@@ -46,186 +43,10 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy
 } from '@dnd-kit/sortable'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-import { useDroppable } from '@dnd-kit/core'
+import { DraggableTaskCard, DroppableColumn } from '@/components/kanban'
+import { useKanbanHelpers } from '@/hooks/useKanbanHelpers'
 import '@/styles/dashboard.css'
 import CompassLogo from '../assets/compass-logo.png'
-// Componente para card arrastável
-function DraggableTaskCard({
-  task,
-  status,
-  onClick,
-  getPriorityColor,
-  formatDate,
-  isOverdue,
-  getUserName
-}: {
-  task: Task
-  status: Status
-  onClick: (task: Task) => void
-  getPriorityColor: (priority: string) => string
-  formatDate: (dateString?: string) => string
-  isOverdue: (endDate?: string) => boolean
-  getUserName: (userId: string) => string
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({ id: task.id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1
-  }
-
-  return (
-    <Card
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      className={`p-4 lg:p-5 border-l-4 hover:shadow-lg transition-all duration-200 cursor-pointer bg-[#252525] border-gray-600 rounded-lg ${
-        isOverdue(task.endDate) && status !== 'done'
-          ? 'border-l-red-400 bg-red-900/20 hover:bg-red-900/30'
-          : 'border-l-gray-500 hover:border-l-blue-400 hover:bg-gray-700/50'
-      } ${isDragging ? 'z-50' : ''}`}
-      onClick={() => !isDragging && onClick(task)}
-    >
-      <div className="space-y-3">
-        <div className="flex items-start justify-between gap-3">
-          <h4 className="font-medium text-white text-base lg:text-lg line-clamp-2 flex-1 pr-2">
-            {task.title}
-          </h4>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span
-              className={`px-3 py-1 text-sm font-medium rounded-full whitespace-nowrap ${getPriorityColor(
-                task.priority
-              )}`}
-            >
-              {task.priority === 'low'
-                ? 'Baixa'
-                : task.priority === 'medium'
-                ? 'Média'
-                : 'Alta'}
-            </span>
-            <div
-              {...listeners}
-              className="w-10 h-10 flex items-center justify-center hover:bg-gray-600 rounded cursor-grab active:cursor-grabbing flex-shrink-0"
-              title="Arrastar para mover"
-            >
-              <div className="grid grid-cols-2 gap-1.5">
-                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <p className="text-gray-300 text-sm lg:text-base line-clamp-2">
-          {task.description}
-        </p>
-
-        <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 text-sm lg:text-base text-gray-400">
-          <div className="flex items-center space-x-2">
-            <Calendar className="h-4 w-4 flex-shrink-0" />
-            <span
-              className={
-                isOverdue(task.endDate) && status !== 'done'
-                  ? 'text-red-400 font-medium'
-                  : ''
-              }
-            >
-              {formatDate(task.endDate)}
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <UserIcon className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">{getUserName(task.assignee)}</span>
-          </div>
-        </div>
-
-        {task.tags && task.tags.length > 0 && (
-          <div className="flex items-center space-x-2">
-            <Tag className="h-4 w-4 text-gray-500 flex-shrink-0" />
-            <div className="flex flex-wrap gap-1">
-              {task.tags.slice(0, 2).map((tag, index) => (
-                <span
-                  key={index}
-                  className="px-2 py-1 text-sm bg-gray-700 text-gray-300 rounded truncate"
-                >
-                  {tag}
-                </span>
-              ))}
-              {task.tags.length > 2 && (
-                <span className="px-2 py-1 text-sm bg-gray-700 text-gray-300 rounded">
-                  +{task.tags.length - 2}
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    </Card>
-  )
-}
-
-// Componente para coluna droppable
-function DroppableColumn({
-  id,
-  statusConfig,
-  children
-}: {
-  id: string
-  statusConfig: any
-  children: React.ReactNode
-}) {
-  const { isOver, setNodeRef } = useDroppable({
-    id
-  })
-
-  const StatusIcon = statusConfig.icon
-
-  return (
-    <div
-      ref={setNodeRef}
-      className={`bg-[#252525] rounded-xl shadow-lg border transition-all duration-200 flex flex-col h-full max-h-full overflow-hidden relative ${
-        isOver
-          ? 'ring-2 ring-blue-400 ring-opacity-75 bg-blue-900/20 border-blue-400 shadow-blue-400/20 shadow-xl scale-[1.02]'
-          : 'border-gray-600 hover:border-gray-500'
-      }`}
-    >
-      {/* Área de drop expandida - invisível mas funcional com padding extra */}
-      <div className="absolute inset-0 z-10 pointer-events-none -m-4" />
-
-      <div
-        className={`p-4 lg:p-5 border-b ${statusConfig.borderColor} ${statusConfig.bgColor} relative z-20`}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <StatusIcon
-              className={`h-5 w-5 lg:h-6 lg:w-6 ${statusConfig.color}`}
-            />
-            <h3 className="font-semibold text-white text-base lg:text-lg">
-              {statusConfig.title}
-            </h3>
-          </div>
-        </div>
-      </div>
-
-      {/* Container do conteúdo com área de drop expandida */}
-      <div className="flex-1 relative z-20 overflow-hidden">{children}</div>
-    </div>
-  )
-}
-
 export function HomePage() {
   const [tasks, setTasks] = useState<Task[]>([])
   const [users, setUsers] = useState<User[]>([])
@@ -239,6 +60,15 @@ export function HomePage() {
   const [isCreateTaskModalOpen, setIsCreateTaskModalOpen] = useState(false)
   const [isUsersModalOpen, setIsUsersModalOpen] = useState(false)
   const [isCreateUserModalOpen, setIsCreateUserModalOpen] = useState(false)
+
+  // Hook para helpers do Kanban
+  const {
+    getStatusConfig,
+    getPriorityColor,
+    getUserName,
+    formatDate,
+    isOverdue
+  } = useKanbanHelpers(users)
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -272,56 +102,6 @@ export function HomePage() {
     fetchData()
   }, [])
 
-  const getStatusConfig = (status: Status) => {
-    const configs = {
-      todo: {
-        title: 'A Fazer',
-        icon: Circle,
-        color: 'text-gray-300',
-        bgColor: 'bg-gray-800',
-        borderColor: 'border-gray-700'
-      },
-      'in-progress': {
-        title: 'Em Progresso',
-        icon: PlayCircle,
-        color: 'text-blue-400',
-        bgColor: 'bg-blue-900/30',
-        borderColor: 'border-blue-700'
-      },
-      review: {
-        title: 'Em Revisão',
-        icon: AlertCircle,
-        color: 'text-orange-400',
-        bgColor: 'bg-orange-900/30',
-        borderColor: 'border-orange-700'
-      },
-      done: {
-        title: 'Concluído',
-        icon: CheckCircle,
-        color: 'text-green-400',
-        bgColor: 'bg-green-900/30',
-        borderColor: 'border-green-700'
-      }
-    }
-    return configs[status]
-  }
-
-  const getPriorityColor = (priority: string) => {
-    const colors = {
-      low: 'text-green-300 bg-green-900/30',
-      medium: 'text-yellow-300 bg-yellow-900/30',
-      high: 'text-red-300 bg-red-900/30'
-    }
-    return (
-      colors[priority as keyof typeof colors] || 'text-gray-300 bg-gray-800'
-    )
-  }
-
-  const getUserName = (userId: string) => {
-    const user = users.find(u => u.id === userId)
-    return user ? user.name : 'Usuário não encontrado'
-  }
-
   const getTasksByStatus = (status: Status) => {
     return tasks
       .filter(task => task.status === status)
@@ -331,21 +111,6 @@ export function HomePage() {
         if (!b.endDate) return -1
         return new Date(a.endDate).getTime() - new Date(b.endDate).getTime()
       })
-  }
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Sem prazo'
-    const date = new Date(dateString)
-    return date.toLocaleDateString('pt-BR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    })
-  }
-
-  const isOverdue = (endDate?: string) => {
-    if (!endDate) return false
-    return new Date(endDate) < new Date()
   }
 
   const getTaskStats = () => {
