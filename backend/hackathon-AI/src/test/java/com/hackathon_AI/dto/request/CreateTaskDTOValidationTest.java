@@ -181,7 +181,7 @@ public class CreateTaskDTOValidationTest {
         Set<ConstraintViolation<CreateTaskDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty(), "Expected violations for blank priority.");
         assertEquals(2, violations.size());
-        assertEquals("Priority is required", violations.iterator().next().getMessage());
+        assertEquals("Priority must be classified in LOW, MEDIUM or HIGH", violations.iterator().next().getMessage());
         assertEquals("priority", violations.iterator().next().getPropertyPath().toString());
     }
 

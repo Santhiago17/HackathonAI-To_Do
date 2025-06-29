@@ -48,7 +48,7 @@ public class CreateUserDTOValidationTest {
         Set<ConstraintViolation<CreateUserDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty(), "Expected violations for blank first name");
         assertEquals(2, violations.size());
-        assertEquals("First name is required", violations.iterator().next().getMessage());
+        assertEquals("First name must contain only letters", violations.iterator().next().getMessage());
         assertEquals("firstName", violations.iterator().next().getPropertyPath().toString());
     }
 
