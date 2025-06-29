@@ -70,3 +70,8 @@
   max-width: 1440px;
   margin: 0 auto;
 }
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 transparent;
+}
