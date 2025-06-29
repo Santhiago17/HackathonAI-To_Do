@@ -21,7 +21,7 @@ export function TaskCreatePage() {
         const usersData = await getUsers()
         setUsers(usersData)
       } catch (err) {
-        console.error('Erro ao buscar usuários:', err)
+        
         setError(err as Error)
       } finally {
         setIsLoadingUsers(false)
@@ -36,11 +36,11 @@ export function TaskCreatePage() {
     setError(null)
     try {
       await createTask(data)
-      console.log('Tarefa criada com sucesso!')
+      
       navigate('/tasks')
     } catch (err) {
       setError(err as Error)
-      console.error('Falha ao criar tarefa:', err)
+      
     } finally {
       setIsLoading(false)
     }

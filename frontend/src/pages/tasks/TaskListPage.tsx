@@ -23,7 +23,7 @@ export function TaskListPage() {
       setUsers(usersData)
     } catch (err) {
       setError(err as Error)
-      console.error('Falha ao buscar dados:', err)
+      
     } finally {
       setIsLoading(false)
     }
@@ -37,11 +37,11 @@ export function TaskListPage() {
     if (window.confirm('Tem certeza que deseja excluir esta tarefa?')) {
       try {
         await deleteTask(taskId)
-        console.log('Tarefa excluída com sucesso')
+        
         fetchData()
       } catch (err) {
         setError(err as Error)
-        console.error('Falha ao excluir tarefa:', err)
+        
       }
     }
   }

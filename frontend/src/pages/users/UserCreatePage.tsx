@@ -15,11 +15,11 @@ export function UserCreatePage() {
     setError(null)
     try {
       await createUser(data)
-      console.log('Usuário criado com sucesso!')
+      
       navigate('/users')
     } catch (err) {
       setError(err as Error)
-      console.error('Failed to create user:', err)
+      
     } finally {
       setIsLoading(false)
     }

@@ -129,7 +129,7 @@ export function HomePage() {
         setSearchResults(filtered)
       }
     } catch (error) {
-      console.error("Erro ao buscar tarefas:", error)
+      
       setSearchResults([])
     } finally {
       setIsSearching(false)
@@ -180,7 +180,7 @@ export function HomePage() {
         setUsers(usersData)
       } catch (err) {
         setError("Erro ao carregar dados")
-        console.error("Erro ao carregar dados:", err)
+        
       } finally {
         setLoading(false)
       }
@@ -227,7 +227,7 @@ export function HomePage() {
       setTasks(tasksData)
       setUsers(usersData)
     } catch (err) {
-      console.error("Erro ao recarregar dados:", err)
+      
     }
   }
 
@@ -237,7 +237,7 @@ export function HomePage() {
       await handleTaskUpdated()
       setIsCreateTaskModalOpen(false)
     } catch (error) {
-      console.error("Erro ao criar tarefa:", error)
+      
       throw error
     }
   }
@@ -248,7 +248,7 @@ export function HomePage() {
       await handleTaskUpdated()
       setIsCreateUserModalOpen(false)
     } catch (error) {
-      console.error("Erro ao criar usuário:", error)
+      
       throw error
     }
   }
@@ -281,9 +281,9 @@ export function HomePage() {
 
         try {
           await updateTaskStatus(activeId, targetStatus)
-          console.log(`Task ${activeId} atualizada para status ${targetStatus}`)
+          
         } catch (error) {
-          console.error("Erro ao atualizar status da task:", error)
+          
           await handleTaskUpdated()
         }
       }

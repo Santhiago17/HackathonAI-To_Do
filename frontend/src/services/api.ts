@@ -11,21 +11,3 @@ export const api = axios.create({
     'Content-Type': 'application/json'
   }
 })
-
-// Interceptor para tratamento de erros
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response) {
-      // Erro de resposta do servidor
-      console.error('API Error:', error.response.status, error.response.data)
-    } else if (error.request) {
-      // Erro de rede
-      console.error('Network Error:', 'Unable to connect to server')
-    } else {
-      // Erro de configuração
-      console.error('Request Error:', error.message)
-    }
-    return Promise.reject(error)
-  }
-)
