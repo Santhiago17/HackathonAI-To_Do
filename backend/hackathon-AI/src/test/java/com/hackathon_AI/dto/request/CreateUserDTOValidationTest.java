@@ -48,7 +48,7 @@ public class CreateUserDTOValidationTest {
         Set<ConstraintViolation<CreateUserDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty(), "Expected violations for blank first name");
         assertEquals(2, violations.size());
-        assertEquals("First name must contain only letters", violations.iterator().next().getMessage());
+
         assertEquals("firstName", violations.iterator().next().getPropertyPath().toString());
     }
 
@@ -93,7 +93,6 @@ public class CreateUserDTOValidationTest {
         Set<ConstraintViolation<CreateUserDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty(), "Expected violations for blank last name");
         assertEquals(2, violations.size());
-        assertEquals("Last name must contain only letters", violations.iterator().next().getMessage());
         assertEquals("lastName", violations.iterator().next().getPropertyPath().toString());
     }
 

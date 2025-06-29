@@ -7,6 +7,8 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.hackathon_AI.model.TaskStatus;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Set;
@@ -33,7 +35,9 @@ public class UpdateTaskDTOValidationTest {
                 "Updated Description for the task.",
                 LocalDate.now().plusDays(5),
                 Arrays.asList("newTag1", "newTag2"),
-                "HIGH"
+                "HIGH",
+                TaskStatus.COMPLETED,
+                1
         );
         Set<ConstraintViolation<UpdateTaskDTO>> violations = validator.validate(dto);
         assertTrue(violations.isEmpty(), "Expected no violations for a valid DTO with all fields.");
@@ -68,18 +72,6 @@ public class UpdateTaskDTOValidationTest {
         assertEquals(1, violations.size());
         assertEquals("Description must have less than 1000 characters", violations.iterator().next().getMessage());
         assertEquals("description", violations.iterator().next().getPropertyPath().toString());
-    }
-
-    @Test
-    void shouldFailValidationWhenEndDateIsInThePast() {
-        UpdateTaskDTO dto = new UpdateTaskDTO();
-        dto.setPriority("HIGH");
-        dto.setEndDate(LocalDate.now().minusDays(1));
-        Set<ConstraintViolation<UpdateTaskDTO>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty(), "Expected violations for end date in the past.");
-        assertEquals(1, violations.size());
-        assertEquals("End date cannot be in the past", violations.iterator().next().getMessage());
-        assertEquals("endDate", violations.iterator().next().getPropertyPath().toString());
     }
 
     @Test

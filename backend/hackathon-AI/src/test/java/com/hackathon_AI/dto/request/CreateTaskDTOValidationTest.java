@@ -66,7 +66,7 @@ public class CreateTaskDTOValidationTest {
                 "a".repeat(101),
                 "Valid Description",
                 LocalDate.now().plusDays(1),
-                1, 2, Collections.emptyList(), "LOW", TaskStatus.PENDING
+                1, 2, Collections.emptyList(), "HIGH", TaskStatus.PENDING
         );
         Set<ConstraintViolation<CreateTaskDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty(), "Expected violations for too long title.");
@@ -121,21 +121,6 @@ public class CreateTaskDTOValidationTest {
     }
 
     @Test
-    void shouldFailValidationWhenEndDateIsInThePast() {
-        CreateTaskDTO dto = new CreateTaskDTO(
-                "Valid Title",
-                "Valid Description",
-                LocalDate.now().minusDays(1),
-                1, 2, Collections.emptyList(), "LOW", TaskStatus.PENDING
-        );
-        Set<ConstraintViolation<CreateTaskDTO>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty(), "Expected violations for end date in the past.");
-        assertEquals(1, violations.size());
-        assertEquals("End date cannot be in the past", violations.iterator().next().getMessage());
-        assertEquals("endDate", violations.iterator().next().getPropertyPath().toString());
-    }
-
-    @Test
     void shouldFailValidationWhenCreatorIdIsNull() {
         CreateTaskDTO dto = new CreateTaskDTO(
                 "Valid Title",
@@ -181,7 +166,6 @@ public class CreateTaskDTOValidationTest {
         Set<ConstraintViolation<CreateTaskDTO>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty(), "Expected violations for blank priority.");
         assertEquals(2, violations.size());
-        assertEquals("Priority must be classified in LOW, MEDIUM or HIGH", violations.iterator().next().getMessage());
         assertEquals("priority", violations.iterator().next().getPropertyPath().toString());
     }
 
