@@ -1,4 +1,4 @@
-import { useDroppable } from "@dnd-kit/core"
+import { useDroppable } from '@dnd-kit/core'
 
 interface StatusConfig {
   title: string
@@ -17,10 +17,10 @@ interface DroppableColumnProps {
 export function DroppableColumn({
   id,
   statusConfig,
-  children,
+  children
 }: DroppableColumnProps) {
   const { isOver, setNodeRef } = useDroppable({
-    id,
+    id
   })
 
   const StatusIcon = statusConfig.icon
@@ -30,8 +30,8 @@ export function DroppableColumn({
       ref={setNodeRef}
       className={`bg-[#252525] rounded-xl shadow-lg border transition-all duration-200 flex flex-col h-full max-h-full overflow-hidden relative ${
         isOver
-          ? "ring-2 ring-blue-400 ring-opacity-75 bg-blue-900/20 border-blue-400 shadow-blue-400/20 shadow-xl scale-[1.02]"
-          : "border-gray-600 hover:border-gray-500"
+          ? 'ring-2 ring-blue-400 ring-opacity-75 bg-blue-900/20 border-blue-400 shadow-blue-400/20 shadow-xl scale-[1.02]'
+          : 'border-gray-600 hover:border-gray-500'
       }`}
     >
       <div className="absolute inset-0 z-10 pointer-events-none -m-4" />

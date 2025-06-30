@@ -41,9 +41,8 @@ export function HomePage() {
         ])
         setTasks(tasksData)
         setUsers(usersData)
-      } catch (err) {
+      } catch {
         setError("Erro ao carregar dados")
-        
       } finally {
         setLoading(false)
       }
@@ -63,33 +62,19 @@ export function HomePage() {
   }
 
   const handleTaskUpdated = async () => {
-    try {
-      const [tasksData, usersData] = await Promise.all([getTasks(), getUsers()])
-      setTasks(tasksData)
-      setUsers(usersData)
-    } catch (err) {
-      
-    }
+    const [tasksData, usersData] = await Promise.all([getTasks(), getUsers()])
+    setTasks(tasksData)
+    setUsers(usersData)
   }
 
   const handleCreateTask = async (taskData: CreateTaskType) => {
-    try {
-      await createTask(taskData)
-      await handleTaskUpdated()
-    } catch (error) {
-      
-      throw error
-    }
+    await createTask(taskData)
+    await handleTaskUpdated()
   }
 
   const handleCreateUser = async (userData: CreateUserType) => {
-    try {
-      await createUser(userData)
-      await handleTaskUpdated()
-    } catch (error) {
-      
-      throw error
-    }
+    await createUser(userData)
+    await handleTaskUpdated()
   }
 
   if (loading) {
