@@ -14,8 +14,8 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     
     List<Task> findByAssignee(User assignee);
     
-    @Query("SELECT t FROM Task t JOIN t.tags tag WHERE tag LIKE CONCAT('%', :tagPattern, '%')")
-    List<Task> findTasksByTagsContaining(@Param("tagPattern") String tagPattern);
+    @Query("SELECT t FROM Task t JOIN t.tags tag WHERE LOWER(tag) LIKE LOWER(CONCAT('%', :tag, '%'))")
+    List<Task> findTasksByTagsContaining(@Param("tag") String tagPattern);
     
     @Query("SELECT t FROM Task t JOIN t.tags tag WHERE tag = :exactTag")
     List<Task> findTasksByExactTag(@Param("exactTag") String exactTag);

@@ -27,7 +27,7 @@ const mapStatusFromBackend = (backendStatus: string): Status => {
     'PENDING': 'todo',
     'IN_PROGRESS': 'in-progress',
     'COMPLETED': 'done',
-    'CANCELLED': 'review'
+    'REVIEW': 'review'
   };
   return statusMap[backendStatus] || 'todo';
 };
@@ -38,29 +38,29 @@ const mapStatusToBackend = (frontendStatus: Status): string => {
     'todo': 'PENDING',
     'in-progress': 'IN_PROGRESS',
     'done': 'COMPLETED',
-    'review': 'CANCELLED'
+    'review': 'REVIEW'
   };
   return statusMap[frontendStatus] || 'PENDING';
 };
 
-// Converte prioridade do backend (String numérica: "1") para frontend (Priority: 'low')
+// Converte prioridade do backend (String: "HIGH") para frontend (Priority: 'high')
 const mapPriorityFromBackend = (backendPriority: string): Priority => {
   const priorityMap: Record<string, Priority> = {
-    '1': 'low',
-    '2': 'medium',
-    '3': 'high'
+    'LOW': 'low',
+    'MEDIUM': 'medium',
+    'HIGH': 'high'
   };
   return priorityMap[backendPriority] || 'low';
 };
 
-// Converte prioridade do frontend (Priority: 'low') para backend (String numérica: "1")
+// Converte prioridade do frontend (Priority: 'low') para backend (String: "LOW")
 const mapPriorityToBackend = (frontendPriority: Priority): string => {
   const priorityMap: Record<Priority, string> = {
-    'low': '1',
-    'medium': '2',
-    'high': '3'
+    'low': 'LOW',
+    'medium': 'MEDIUM',
+    'high': 'HIGH'
   };
-  return priorityMap[frontendPriority] || '1';
+  return priorityMap[frontendPriority] || 'LOW';
 };
 
 // --- Funções de Mapeamento Interno (JSON da API para Task do Frontend) ---
@@ -93,12 +93,12 @@ export const getTasks = async (): Promise<Task[]> => {
   try {
     const response = await api.get('/tasks');
     if (!Array.isArray(response.data)) {
-      console.error('Erro: resposta da API de tasks não é um array', response.data);
+      
       return [];
     }
     return response.data.map(mapApiResponseToTask);
   } catch (error) {
-    console.error('Erro ao buscar tarefas:', error);
+    
     return [];
   }
 };
@@ -115,7 +115,7 @@ export const getTaskById = async (id: string): Promise<Task | undefined> => {
     const response = await api.get(`/tasks/${id}`);
     return mapApiResponseToTask(response.data);
   } catch (error: any) {
-    console.error(`Erro ao buscar tarefa com id: ${id}:`, error);
+    
     if (error.response && error.response.status === 404) {
       return undefined;
     }
@@ -133,12 +133,12 @@ export const getTasksByAssignee = async (assigneeId: string): Promise<Task[]> =>
   try {
     const response = await api.get(`/tasks/user/${assigneeId}`);
     if (!Array.isArray(response.data)) {
-      console.error('Erro: resposta da API de tarefas por atribuído não é um array', response.data);
+      
       return [];
     }
     return response.data.map(mapApiResponseToTask);
   } catch (error) {
-    console.error(`Erro ao buscar tarefas para atribuído: ${assigneeId}:`, error);
+    
     return [];
   }
 };
@@ -151,12 +151,21 @@ export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'upda
   }
 
   try {
+    // Validações básicas
+    if (!taskData.creator || !taskData.assignee) {
+      throw new Error('Creator e Assignee são obrigatórios');
+    }
+    
+    if (!taskData.endDate) {
+      throw new Error('Data de término é obrigatória');
+    }
+
     const backendTaskData = {
       title: taskData.title,
       description: taskData.description,
-      creator: { id: parseInt(taskData.creator || '') },
-      assignee: { id: parseInt(taskData.assignee || '') },
-      tags: taskData.tags,
+      creatorId: parseInt(taskData.creator),
+      assigneeId: parseInt(taskData.assignee),
+      tags: taskData.tags || [],
       priority: mapPriorityToBackend(taskData.priority),
       status: mapStatusToBackend(taskData.status),
       endDate: taskData.endDate,
@@ -165,7 +174,7 @@ export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'upda
     const response = await api.post('/tasks', backendTaskData);
     return mapApiResponseToTask(response.data);
   } catch (error) {
-    console.error('Erro ao criar tarefa:', error);
+    
     throw error;
   }
 };
@@ -190,17 +199,17 @@ export const updateTask = async (id: string, taskData: Partial<Task>): Promise<T
     if (taskData.priority !== undefined) backendTaskData.priority = mapPriorityToBackend(taskData.priority);
 
     if (taskData.creator !== undefined) {
-      backendTaskData.creator = taskData.creator ? { id: parseInt(taskData.creator) } : null;
+      backendTaskData.creatorId = taskData.creator ? parseInt(taskData.creator) : null;
     }
     if (taskData.assignee !== undefined) {
-      backendTaskData.assignee = taskData.assignee ? { id: parseInt(taskData.assignee) } : null;
+      backendTaskData.assigneeId = taskData.assignee ? parseInt(taskData.assignee) : null;
     }
     if (taskData.endDate !== undefined) backendTaskData.endDate = taskData.endDate;
     
     const response = await api.put(`/tasks/${id}`, backendTaskData);
     return mapApiResponseToTask(response.data);
   } catch (error) {
-    console.error(`Erro ao atualizar tarefa com id: ${id}:`, error);
+    
     throw error;
   }
 };
@@ -210,14 +219,13 @@ export const deleteTask = async (id: string): Promise<void> => {
   if (mockConfig.useMockData) {
     await delay(mockConfig.apiDelay);
     mockDeleteTask(id);
-    console.log(`Tarefa ${id} removida (mock)`);
     return;
   }
 
   try {
     await api.delete(`/tasks/${id}`);
   } catch (error) {
-    console.error(`Erro ao excluir tarefa com id ${id}:`, error);
+    
     throw error;
   }
 };
@@ -233,10 +241,10 @@ export const updateTaskStatus = async (id: string, status: Status): Promise<Task
 
   try {
     const backendStatus = mapStatusToBackend(status);
-    const response = await api.patch(`/tasks/${id}/status`, { status: backendStatus });
+    const response = await api.put(`/tasks/${id}/status`, { status: backendStatus });
     return mapApiResponseToTask(response.data);
   } catch (error) {
-    console.error(`Erro ao atualizar status da tarefa ${id}:`, error);
+    
     throw error;
   }
 };
@@ -252,12 +260,12 @@ export const searchTasksByTag = async (tag: string): Promise<Task[]> => {
   try {
     const response = await api.get(`/tasks/search?tag=${encodeURIComponent(tag)}`);
     if (!Array.isArray(response.data)) {
-      console.error('Erro: resposta da API de busca por tag não é um array', response.data);
+      
       return [];
     }
     return response.data.map(mapApiResponseToTask);
   } catch (error) {
-    console.error(`Erro ao buscar tarefas por tag "${tag}":`, error);
+    
     return [];
   }
 };
@@ -283,7 +291,7 @@ export const getTasksWithUsers = async (): Promise<TaskWithUser[]> => {
     ]);
 
     if (!Array.isArray(tasksResponse.data) || !Array.isArray(usersResponse.data)) {
-      console.error('Erro: uma das respostas da API de tarefas/usuários não é um array');
+      
       return [];
     }
 
@@ -303,7 +311,7 @@ export const getTasksWithUsers = async (): Promise<TaskWithUser[]> => {
       return { ...task, user, creatorUser };
     });
   } catch (error) {
-    console.error('Erro ao buscar tarefas com usuários:', error);
+    
     throw error;
   }
 };

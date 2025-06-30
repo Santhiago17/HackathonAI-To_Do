@@ -60,6 +60,16 @@ public class TaskService {
         Optional.ofNullable(dto.getPriority())
                 .ifPresent(priority -> task.setPriority(priority.toUpperCase()));
 
+        Optional.ofNullable(dto.getStatus())
+                .ifPresent(task::setStatus);
+
+        Optional.ofNullable(dto.getAssigneeId())
+                .ifPresent(assigneeId -> {
+                    User assignee = userRepository.findById(assigneeId)
+                            .orElseThrow(() -> new EntityNotFoundException("Assignee not found"));
+                    task.setAssignee(assignee);
+                });
+
         return converter.toTaskResponseDTO(taskRepository.save(task));
     }
 

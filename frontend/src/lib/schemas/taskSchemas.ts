@@ -25,15 +25,14 @@ export const createTaskSchema = z.object({
     .default([]),
   endDate: z
     .string()
-    .optional()
+    .min(1, 'Data de término é obrigatória')
     .refine(
       date => {
-        if (!date) return true
         const parsedDate = new Date(date)
-        return !isNaN(parsedDate.getTime()) && parsedDate >= new Date()
+        return !isNaN(parsedDate.getTime())
       },
       {
-        message: 'Data de término deve ser uma data válida no futuro'
+        message: 'Data de término deve ser uma data válida'
       }
     )
 })
