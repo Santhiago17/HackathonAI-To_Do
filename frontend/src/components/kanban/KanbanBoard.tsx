@@ -8,17 +8,17 @@ import {
   useSensors,
   DragOverlay,
   type DragEndEvent,
-  type DragStartEvent
-} from '@dnd-kit/core'
+  type DragStartEvent,
+} from "@dnd-kit/core"
 import {
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy
-} from '@dnd-kit/sortable'
-import { DraggableTaskCard, DroppableColumn } from './'
-import type { Task, Status } from '@/types/Task'
-import type { User } from '@/types/User'
-import type { StatusConfig } from './types'
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable"
+import { DraggableTaskCard, DroppableColumn } from "./"
+import type { Task, Status } from "@/types/Task"
+import type { User } from "@/types/User"
+import type { StatusConfig } from "./types"
 
 interface KanbanBoardProps {
   tasks: Task[]
@@ -48,36 +48,35 @@ export function KanbanBoard({
   getPriorityColor,
   formatDate,
   isOverdue,
-  getUserName
+  getUserName,
 }: KanbanBoardProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8
-      }
+        distance: 8,
+      },
     }),
     useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates
+      coordinateGetter: sortableKeyboardCoordinates,
     })
   )
 
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={args => {
-        // Primeiro tenta pointerWithin para melhor detecção em áreas sobrepostas
+      collisionDetection={(args) => {
         const pointerIntersections = pointerWithin(args)
         if (pointerIntersections.length > 0) {
           return pointerIntersections
         }
-        // Fallback para closestCenter se não houver intersecção direta
+
         return closestCenter(args)
       }}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6 h-full">
-        {statusTypes.map(status => {
+        {statusTypes.map((status) => {
           const statusConfig = getStatusConfig(status)
           const statusTasks = getTasksByStatus(status)
           const StatusIcon = statusConfig.icon
@@ -103,10 +102,10 @@ export function KanbanBoard({
                   </div>
                 ) : (
                   <SortableContext
-                    items={statusTasks.map(task => task.id)}
+                    items={statusTasks.map((task) => task.id)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {statusTasks.map(task => (
+                    {statusTasks.map((task) => (
                       <DraggableTaskCard
                         key={task.id}
                         task={task}
@@ -129,8 +128,10 @@ export function KanbanBoard({
       <DragOverlay>
         {activeId ? (
           <DraggableTaskCard
-            task={tasks.find(task => task.id === activeId)!}
-            status={tasks.find(task => task.id === activeId)?.status || 'todo'}
+            task={tasks.find((task) => task.id === activeId)!}
+            status={
+              tasks.find((task) => task.id === activeId)?.status || "todo"
+            }
             onClick={() => {}}
             getPriorityColor={getPriorityColor}
             formatDate={formatDate}
