@@ -1,7 +1,9 @@
 # HackathonAI-To_Do
 
 📝 Sistema TODO - Aplicação Modernizada
+
 📌 Visão Geral
+
 Este projeto é uma modernização de um sistema de gerenciamento de tarefas originalmente desenvolvido em COBOL. A nova versão foi reestruturada utilizando Java com Spring Boot no backend e React no frontend, oferecendo uma arquitetura moderna baseada em APIs REST e MVC, persistência em banco de dados "In-Memory" e uma interface web responsiva e interativa.
 
 🧱 Arquitetura da Solução
@@ -97,7 +99,23 @@ Tarefa:
 - Limite de tarefas por usuário configurável
 
 
-👥 Time de Desenvolvimento
+## 🚀 Como Executar o Projeto
+
+### Pré-requisitos
+- Java 21 ou superior
+- Maven 3.6+ (ou usar o wrapper incluído)
+- Node.js 18+ (para o frontend)
+
+### FrontEnd/Client-Side
+
+[Instruções](frontend\README-FRONTEND.md)
+
+### BackEnd/Aplicação
+
+[Instruções](backend\hackathon-AI\README.md)
+
+
+## 👥 Time de Desenvolvimento
 Este projeto foi desenvolvido por:
 - https://github.com/Daniel-Lzs
 - https://github.com/banaclara
