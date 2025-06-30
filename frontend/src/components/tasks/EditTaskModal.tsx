@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from "react"
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription
-} from '@/components/ui/dialog'
-import { TaskForm } from '@/components/tasks/TaskForm'
-import { updateTask, deleteTask } from '@/services/taskService'
-import type { Task } from '@/types/Task'
-import type { User } from '@/types/User'
-import type { CreateTaskType } from '@/lib/schemas/taskSchemas'
-import { Trash2 } from 'lucide-react'
+  DialogDescription,
+} from "@/components/ui/dialog"
+import { TaskForm } from "@/components/tasks/TaskForm"
+import { updateTask, deleteTask } from "@/services/taskService"
+import type { Task } from "@/types/Task"
+import type { User } from "@/types/User"
+import type { CreateTaskType } from "@/lib/schemas/taskSchemas"
+import { Trash2 } from "lucide-react"
 
 interface EditTaskModalProps {
   task: Task | null
@@ -26,7 +26,7 @@ export function EditTaskModal({
   users,
   isOpen,
   onClose,
-  onTaskUpdated
+  onTaskUpdated,
 }: EditTaskModalProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -48,14 +48,13 @@ export function EditTaskModal({
     try {
       await updateTask(task.id, {
         ...data,
-        id: task.id
+        id: task.id,
       })
-      
+
       onTaskUpdated()
       onClose()
     } catch (err) {
       setError(err as Error)
-      
     } finally {
       setIsLoading(false)
     }
@@ -72,12 +71,11 @@ export function EditTaskModal({
     setError(null)
     try {
       await deleteTask(task.id)
-      
+
       onTaskUpdated()
       onClose()
     } catch (err) {
       setError(err as Error)
-      
     } finally {
       setIsDeleting(false)
       setShowDeleteConfirm(false)
@@ -96,7 +94,7 @@ export function EditTaskModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="bg-[#252525] border-gray-600 text-white max-w-2xl">
+      <DialogContent className="bg-[#252525] border-gray-600 text-white max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
           <div className="flex items-center justify-between pr-8">
             <div>
@@ -131,9 +129,12 @@ export function EditTaskModal({
 
         {showDeleteConfirm && (
           <div className="p-4 rounded-lg bg-red-900/20 border border-red-500/30">
-            <h3 className="text-white font-semibold mb-2">Confirmar Exclusão</h3>
+            <h3 className="text-white font-semibold mb-2">
+              Confirmar Exclusão
+            </h3>
             <p className="text-gray-300 mb-4">
-              Tem certeza que deseja excluir a tarefa "{task?.title}"? Esta ação não pode ser desfeita.
+              Tem certeza que deseja excluir a tarefa "{task?.title}"? Esta ação
+              não pode ser desfeita.
             </p>
             <div className="flex gap-3">
               <button
@@ -141,7 +142,7 @@ export function EditTaskModal({
                 disabled={isDeleting}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {isDeleting ? 'Excluindo...' : 'Sim, Excluir'}
+                {isDeleting ? "Excluindo..." : "Sim, Excluir"}
               </button>
               <button
                 onClick={handleDeleteCancel}

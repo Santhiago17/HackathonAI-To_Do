@@ -134,24 +134,26 @@ export function TaskForm({
         )}
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-white mb-2">
-          Criador
-        </label>
-        <select
-          className="w-full px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={formData.creator}
-          onChange={(e) => handleInputChange("creator", e.target.value)}
-          required
-        >
-          <option value="">Selecione o criador dessa tarefa</option>
-          {users.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.name || `${user.firstName} ${user.lastName}`}
-            </option>
-          ))}
-        </select>
-      </div>
+      {!initialData?.creator && (
+        <div>
+          <label className="block text-sm font-medium text-white mb-2">
+            Criador
+          </label>
+          <select
+            className="w-full px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={formData.creator}
+            onChange={(e) => handleInputChange("creator", e.target.value)}
+            required
+          >
+            <option value="">Selecione o criador dessa tarefa</option>
+            {users.map((user) => (
+              <option key={user.id} value={user.id}>
+                {user.name || `${user.firstName} ${user.lastName}`}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-white mb-2">
