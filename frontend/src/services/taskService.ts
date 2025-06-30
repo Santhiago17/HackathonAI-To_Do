@@ -27,7 +27,7 @@ const mapStatusFromBackend = (backendStatus: string): Status => {
     'PENDING': 'todo',
     'IN_PROGRESS': 'in-progress',
     'COMPLETED': 'done',
-    'CANCELLED': 'review'
+    'REVIEW': 'review'
   };
   return statusMap[backendStatus] || 'todo';
 };
@@ -38,7 +38,7 @@ const mapStatusToBackend = (frontendStatus: Status): string => {
     'todo': 'PENDING',
     'in-progress': 'IN_PROGRESS',
     'done': 'COMPLETED',
-    'review': 'CANCELLED'
+    'review': 'REVIEW'
   };
   return statusMap[frontendStatus] || 'PENDING';
 };
