@@ -199,10 +199,10 @@ export const updateTask = async (id: string, taskData: Partial<Task>): Promise<T
     if (taskData.priority !== undefined) backendTaskData.priority = mapPriorityToBackend(taskData.priority);
 
     if (taskData.creator !== undefined) {
-      backendTaskData.creator = taskData.creator ? { id: parseInt(taskData.creator) } : null;
+      backendTaskData.creatorId = taskData.creator ? parseInt(taskData.creator) : null;
     }
     if (taskData.assignee !== undefined) {
-      backendTaskData.assignee = taskData.assignee ? { id: parseInt(taskData.assignee) } : null;
+      backendTaskData.assigneeId = taskData.assignee ? parseInt(taskData.assignee) : null;
     }
     if (taskData.endDate !== undefined) backendTaskData.endDate = taskData.endDate;
     
