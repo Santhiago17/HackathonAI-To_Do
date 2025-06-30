@@ -85,7 +85,7 @@ export function TaskForm({
 
       await onSubmit(processedData)
     } catch (error) {
-      console.error('Erro ao enviar formulário:', error)
+      
     }
   }
 

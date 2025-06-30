@@ -50,12 +50,12 @@ export function EditTaskModal({
         ...data,
         id: task.id
       })
-      console.log('Tarefa atualizada com sucesso!')
+      
       onTaskUpdated()
       onClose()
     } catch (err) {
       setError(err as Error)
-      console.error('Falha ao atualizar tarefa:', err)
+      
     } finally {
       setIsLoading(false)
     }
@@ -72,12 +72,12 @@ export function EditTaskModal({
     setError(null)
     try {
       await deleteTask(task.id)
-      console.log('Tarefa excluída com sucesso!')
+      
       onTaskUpdated()
       onClose()
     } catch (err) {
       setError(err as Error)
-      console.error('Falha ao excluir tarefa:', err)
+      
     } finally {
       setIsDeleting(false)
       setShowDeleteConfirm(false)

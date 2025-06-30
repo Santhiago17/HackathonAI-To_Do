@@ -19,7 +19,7 @@ export function UsersPage() {
         setUsers(data)
       } catch (err) {
         setError(err as Error)
-        console.error("Failed to fetch users:", err)
+        
       } finally {
         setIsLoading(false)
       }
