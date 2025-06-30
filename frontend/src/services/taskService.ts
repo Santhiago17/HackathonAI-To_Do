@@ -93,12 +93,12 @@ export const getTasks = async (): Promise<Task[]> => {
   try {
     const response = await api.get('/tasks');
     if (!Array.isArray(response.data)) {
-      console.error('Erro: resposta da API de tasks não é um array', response.data);
+      
       return [];
     }
     return response.data.map(mapApiResponseToTask);
   } catch (error) {
-    console.error('Erro ao buscar tarefas:', error);
+    
     return [];
   }
 };
@@ -115,7 +115,7 @@ export const getTaskById = async (id: string): Promise<Task | undefined> => {
     const response = await api.get(`/tasks/${id}`);
     return mapApiResponseToTask(response.data);
   } catch (error: any) {
-    console.error(`Erro ao buscar tarefa com id: ${id}:`, error);
+    
     if (error.response && error.response.status === 404) {
       return undefined;
     }
@@ -133,12 +133,12 @@ export const getTasksByAssignee = async (assigneeId: string): Promise<Task[]> =>
   try {
     const response = await api.get(`/tasks/user/${assigneeId}`);
     if (!Array.isArray(response.data)) {
-      console.error('Erro: resposta da API de tarefas por atribuído não é um array', response.data);
+      
       return [];
     }
     return response.data.map(mapApiResponseToTask);
   } catch (error) {
-    console.error(`Erro ao buscar tarefas para atribuído: ${assigneeId}:`, error);
+    
     return [];
   }
 };
@@ -174,7 +174,7 @@ export const createTask = async (taskData: Omit<Task, 'id' | 'createdAt' | 'upda
     const response = await api.post('/tasks', backendTaskData);
     return mapApiResponseToTask(response.data);
   } catch (error) {
-    console.error('Erro ao criar tarefa:', error);
+    
     throw error;
   }
 };
@@ -209,7 +209,7 @@ export const updateTask = async (id: string, taskData: Partial<Task>): Promise<T
     const response = await api.put(`/tasks/${id}`, backendTaskData);
     return mapApiResponseToTask(response.data);
   } catch (error) {
-    console.error(`Erro ao atualizar tarefa com id: ${id}:`, error);
+    
     throw error;
   }
 };
@@ -219,14 +219,13 @@ export const deleteTask = async (id: string): Promise<void> => {
   if (mockConfig.useMockData) {
     await delay(mockConfig.apiDelay);
     mockDeleteTask(id);
-    console.log(`Tarefa ${id} removida (mock)`);
     return;
   }
 
   try {
     await api.delete(`/tasks/${id}`);
   } catch (error) {
-    console.error(`Erro ao excluir tarefa com id ${id}:`, error);
+    
     throw error;
   }
 };
@@ -245,7 +244,7 @@ export const updateTaskStatus = async (id: string, status: Status): Promise<Task
     const response = await api.put(`/tasks/${id}/status`, { status: backendStatus });
     return mapApiResponseToTask(response.data);
   } catch (error) {
-    console.error(`Erro ao atualizar status da tarefa ${id}:`, error);
+    
     throw error;
   }
 };
@@ -261,12 +260,12 @@ export const searchTasksByTag = async (tag: string): Promise<Task[]> => {
   try {
     const response = await api.get(`/tasks/search?tag=${encodeURIComponent(tag)}`);
     if (!Array.isArray(response.data)) {
-      console.error('Erro: resposta da API de busca por tag não é um array', response.data);
+      
       return [];
     }
     return response.data.map(mapApiResponseToTask);
   } catch (error) {
-    console.error(`Erro ao buscar tarefas por tag "${tag}":`, error);
+    
     return [];
   }
 };
@@ -292,7 +291,7 @@ export const getTasksWithUsers = async (): Promise<TaskWithUser[]> => {
     ]);
 
     if (!Array.isArray(tasksResponse.data) || !Array.isArray(usersResponse.data)) {
-      console.error('Erro: uma das respostas da API de tarefas/usuários não é um array');
+      
       return [];
     }
 
@@ -312,7 +311,7 @@ export const getTasksWithUsers = async (): Promise<TaskWithUser[]> => {
       return { ...task, user, creatorUser };
     });
   } catch (error) {
-    console.error('Erro ao buscar tarefas com usuários:', error);
+    
     throw error;
   }
 };

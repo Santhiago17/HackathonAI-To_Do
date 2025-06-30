@@ -43,7 +43,7 @@ export function HomePage() {
         setUsers(usersData)
       } catch (err) {
         setError("Erro ao carregar dados")
-        console.error("Erro ao carregar dados:", err)
+        
       } finally {
         setLoading(false)
       }
@@ -68,7 +68,7 @@ export function HomePage() {
       setTasks(tasksData)
       setUsers(usersData)
     } catch (err) {
-      console.error("Erro ao recarregar dados:", err)
+      
     }
   }
 
@@ -77,7 +77,7 @@ export function HomePage() {
       await createTask(taskData)
       await handleTaskUpdated()
     } catch (error) {
-      console.error("Erro ao criar tarefa:", error)
+      
       throw error
     }
   }
@@ -87,7 +87,7 @@ export function HomePage() {
       await createUser(userData)
       await handleTaskUpdated()
     } catch (error) {
-      console.error("Erro ao criar usuário:", error)
+      
       throw error
     }
   }
