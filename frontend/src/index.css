@@ -67,20 +67,20 @@
     margin: 0;
     padding: 0;
     width: 100vw;
-    height: 100vh;
-    overflow-x: hidden;
+    min-height: 100vh;
   }
 
   html {
     background-color: #1a1a1a;
+    min-height: 100vh;
   }
 }
 
 #root {
   width: 100vw;
-  height: 100vh;
   max-width: 1440px;
   margin: 0 auto;
+  min-height: 100vh;
   background-color: #1a1a1a;
 }
 
@@ -164,6 +164,35 @@
 
 .kanban-column-scroll::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
+}
+
+.kanban-horizontal-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #4b5563 #1f2937;
+}
+
+.kanban-horizontal-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.kanban-horizontal-scroll::-webkit-scrollbar-track {
+  background: #1f2937;
+  border-radius: 4px;
+}
+
+.kanban-horizontal-scroll::-webkit-scrollbar-thumb {
+  background: #4b5563;
+  border-radius: 4px;
+}
+
+.kanban-horizontal-scroll::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Garantir que colunas tenham largura mínima */
+.kanban-column {
+  min-width: 280px;
+  width: 100%;
 }
 
 .transition-all {
