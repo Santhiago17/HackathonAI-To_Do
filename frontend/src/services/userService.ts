@@ -35,7 +35,7 @@ export const getUsers = async (): Promise<User[]> => {
     const response = await api.get('/users')
     return response.data.map(mapBackendToUser)
   } catch (error) {
-    console.error('Erro ao buscar usuários:', error)
+    
     throw error
   }
 }
@@ -44,16 +44,16 @@ export const createUser = async (data: CreateUserType): Promise<User> => {
   if (mockConfig.useMockData) {
     await delay(mockConfig.apiDelay)
     const newUser = createMockUser(data)
-    console.log('Usuário criado com sucesso (mock):', newUser)
+    
     return newUser
   }
 
   try {
     const response = await api.post('/users', data)
-    console.log('Usuário criado com sucesso:', response.data)
+    
     return mapBackendToUser(response.data)
   } catch (error) {
-    console.error('Erro ao criar usuário:', error)
+    
     throw error
   }
 }

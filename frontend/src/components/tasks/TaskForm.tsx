@@ -1,13 +1,13 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   createTaskSchema,
-  type CreateTaskType
-} from '@/lib/schemas/taskSchemas'
-import type { Task } from '@/types/Task'
-import type { User } from '@/types/User'
-import { ZodError } from 'zod'
+  type CreateTaskType,
+} from "@/lib/schemas/taskSchemas"
+import type { Task } from "@/types/Task"
+import type { User } from "@/types/User"
+import { ZodError } from "zod"
 
 interface TaskFormProps {
   onSubmit: (data: CreateTaskType) => Promise<void>
@@ -20,29 +20,29 @@ interface TaskFormProps {
 export function TaskForm({
   onSubmit,
   users,
-  currentUserId = '1',
+  currentUserId = "1",
   initialData,
-  isLoading = false
+  isLoading = false,
 }: TaskFormProps) {
   // Função para obter data atual em formato YYYY-MM-DD
   const getTodayDate = () => {
     const today = new Date()
-    return today.toISOString().split('T')[0]
+    return today.toISOString().split("T")[0]
   }
 
   const [formData, setFormData] = useState<CreateTaskType>({
-    title: initialData?.title || '',
-    description: initialData?.description || '',
-    assignee: initialData?.assignee || '',
+    title: initialData?.title || "",
+    description: initialData?.description || "",
+    assignee: initialData?.assignee || "",
     creator: initialData?.creator || currentUserId,
-    priority: initialData?.priority || 'medium',
-    status: initialData?.status || 'todo',
+    priority: initialData?.priority || "medium",
+    status: initialData?.status || "todo",
     tags: initialData?.tags || [],
-    endDate: initialData?.endDate || getTodayDate()
+    endDate: initialData?.endDate || getTodayDate(),
   })
 
   const [tagsInput, setTagsInput] = useState(
-    initialData?.tags ? initialData.tags.join(', ') : ''
+    initialData?.tags ? initialData.tags.join(", ") : ""
   )
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -55,8 +55,8 @@ export function TaskForm({
     } catch (error) {
       if (error instanceof ZodError) {
         const validationErrors: Record<string, string> = {}
-        error.issues.forEach(issue => {
-          const field = issue.path.join('.')
+        error.issues.forEach((issue) => {
+          const field = issue.path.join(".")
           validationErrors[field] = issue.message
         })
         setErrors(validationErrors)
@@ -70,13 +70,13 @@ export function TaskForm({
 
     try {
       const processedTags = tagsInput
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0)
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0)
 
       const processedData = {
         ...formData,
-        tags: processedTags
+        tags: processedTags,
       }
 
       if (!validateForm(processedData)) {
@@ -84,15 +84,15 @@ export function TaskForm({
       }
 
       await onSubmit(processedData)
-    } catch (error) {
-      console.error('Erro ao enviar formulário:', error)
+    } catch {
+      return
     }
   }
 
   const handleInputChange = (field: keyof CreateTaskType, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }))
   }
 
@@ -105,10 +105,10 @@ export function TaskForm({
         <Input
           placeholder="Digite o título da tarefa"
           className={`bg-[#1a1a1a] border-gray-600 text-white placeholder-gray-400 ${
-            errors.title ? 'border-red-500' : ''
+            errors.title ? "border-red-500" : ""
           }`}
           value={formData.title}
-          onChange={e => handleInputChange('title', e.target.value)}
+          onChange={(e) => handleInputChange("title", e.target.value)}
           required
         />
         {errors.title && (
@@ -123,10 +123,10 @@ export function TaskForm({
         <textarea
           placeholder="Digite a descrição da tarefa"
           className={`w-full min-h-[100px] px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.description ? 'border-red-500' : ''
+            errors.description ? "border-red-500" : ""
           }`}
           value={formData.description}
-          onChange={e => handleInputChange('description', e.target.value)}
+          onChange={(e) => handleInputChange("description", e.target.value)}
           required
         />
         {errors.description && (
@@ -136,16 +136,35 @@ export function TaskForm({
 
       <div>
         <label className="block text-sm font-medium text-white mb-2">
+          Criador
+        </label>
+        <select
+          className="w-full px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          value={formData.creator}
+          onChange={(e) => handleInputChange("creator", e.target.value)}
+          required
+        >
+          <option value="">Selecione o criador dessa tarefa</option>
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.name || `${user.firstName} ${user.lastName}`}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-white mb-2">
           Responsável
         </label>
         <select
           className="w-full px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.assignee}
-          onChange={e => handleInputChange('assignee', e.target.value)}
+          onChange={(e) => handleInputChange("assignee", e.target.value)}
           required
         >
           <option value="">Selecione um responsável</option>
-          {users.map(user => (
+          {users.map((user) => (
             <option key={user.id} value={user.id}>
               {user.name || `${user.firstName} ${user.lastName}`}
             </option>
@@ -160,10 +179,10 @@ export function TaskForm({
         <select
           className="w-full px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.priority}
-          onChange={e =>
+          onChange={(e) =>
             handleInputChange(
-              'priority',
-              e.target.value as 'low' | 'medium' | 'high'
+              "priority",
+              e.target.value as "low" | "medium" | "high"
             )
           }
         >
@@ -180,10 +199,10 @@ export function TaskForm({
         <select
           className="w-full px-3 py-2 bg-[#1a1a1a] border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={formData.status}
-          onChange={e =>
+          onChange={(e) =>
             handleInputChange(
-              'status',
-              e.target.value as 'todo' | 'in-progress' | 'review' | 'done'
+              "status",
+              e.target.value as "todo" | "in-progress" | "review" | "done"
             )
           }
         >
@@ -201,10 +220,10 @@ export function TaskForm({
         <Input
           placeholder="Ex: frontend, urgente, bug"
           className={`bg-[#1a1a1a] border-gray-600 text-white placeholder-gray-400 ${
-            errors.tags ? 'border-red-500' : ''
+            errors.tags ? "border-red-500" : ""
           }`}
           value={tagsInput}
-          onChange={e => setTagsInput(e.target.value)}
+          onChange={(e) => setTagsInput(e.target.value)}
         />
         {errors.tags && (
           <p className="text-red-400 text-sm mt-1">{errors.tags}</p>
@@ -219,7 +238,7 @@ export function TaskForm({
           type="date"
           className="bg-[#1a1a1a] border-gray-600 text-white"
           value={formData.endDate}
-          onChange={e => handleInputChange('endDate', e.target.value)}
+          onChange={(e) => handleInputChange("endDate", e.target.value)}
         />
         {errors.endDate && (
           <p className="text-red-400 text-sm mt-1">{errors.endDate}</p>
@@ -233,11 +252,11 @@ export function TaskForm({
       >
         {isLoading
           ? initialData
-            ? 'Salvando...'
-            : 'Criando...'
+            ? "Salvando..."
+            : "Criando..."
           : initialData
-          ? 'Salvar Alterações'
-          : 'Criar Tarefa'}
+          ? "Salvar Alterações"
+          : "Criar Tarefa"}
       </Button>
     </form>
   )
