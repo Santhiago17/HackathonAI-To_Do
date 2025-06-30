@@ -23,7 +23,7 @@ VALUES
     (2, 3, 'Agendar reunião com cliente Y', '2025-07-03', '2025-06-28', 'MEDIUM', 'PENDING', 'Proposta comercial'),
     (6, 2, 'Escrever documentação da API', '2025-07-04', '2025-06-28', 'LOW', 'IN_PROGRESS', 'Documentação API'),
     (7, 1, 'Levar carro para revisão', '2025-06-12', '2025-06-10', 'MEDIUM', 'PENDING', 'Manutenção preventiva'),
-    (8, 3, 'Preparar apresentação para evento', '2025-06-18', '2025-06-15', 'HIGH', 'CANCELLED', 'Slide deck'),
+    (8, 3, 'Preparar apresentação para evento', '2025-06-18', '2025-06-15', 'HIGH', 'REVIEW', 'Slide deck'),
     (9, 2, 'Pesquisar novas tecnologias', '2025-06-25', '2025-06-20', 'LOW', 'COMPLETED', 'Exploração'),
     (10, 1, 'Limpar a casa', DATEADD('DAY', 5, NOW()), NOW(), 'LOW', 'PENDING', 'Organização semanal');
 
