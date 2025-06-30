@@ -189,7 +189,6 @@
   background: #6b7280;
 }
 
-/* Garantir que colunas tenham largura mínima */
 .kanban-column {
   min-width: 280px;
   width: 100%;
